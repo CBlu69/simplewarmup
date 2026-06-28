@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Warmup | سیمپل وارم‌آپ</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- MIST CLOUDS -->
+    <div class="mist-layer">
+        <div class="mist mist-1"></div>
+        <div class="mist mist-2"></div>
+        <div class="mist mist-3"></div>
+        <div class="mist mist-4"></div>
+    </div>
+
+    <!-- MIST CLOUDS -->
+    <div class="mist-layer">
+        <div class="mist mist-1"></div>
+        <div class="mist mist-2"></div>
+        <div class="mist mist-3"></div>
+        <div class="mist mist-4"></div>
+        <div class="mist mist-5"></div>
+        <div class="mist mist-6"></div>
+        <div class="mist mist-7"></div>
+        <div class="mist mist-8"></div>
+    </div>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop" aria-label="رفتن به بالای صفحه">↑</button>
+
+    <!-- NAV -->
+    <nav class="nav" id="navbar">
+        <div class="nav-logo">☁️ Simple Warmup</div>
+        <div class="nav-links">
+            <a class="nav-link" href="#cars">ماشین های شما</a>
+            <a class="nav-link" href="#projects">پروژه های منتخب</a>
+            <a class="nav-link" href="#timeline">سابقه</a>
+            <a class="nav-link" href="#contact">تماس</a>
+            <a class="nav-link" href="#shop">فروشگاه</a>
+            <a class="nav-link" href="chat.html">چت</a>
+        </div>
+        <button class="nav-mobile-toggle" id="mobileToggle" aria-label="منو">☰</button>
+    </nav>
+    <div class="wrapper">
+
+        <!-- ===== HERO ===== -->
+        <section class="hero" id="hero">
+            <div class="hero-badge">هر روز یک قدم به نسخه بهتر خودت نزدیک شو</div>
+
+            <!-- ICE CAR SVG -->
+            <div class="car-wrap">
+                <img src="car.png" alt="Simple Warmup" class="protected-image" id="mainImage" draggable="false"
+                    oncontextmenu="return false;" onselectstart="return false;"
+                    style="width: 560px; height: auto; user-select: none; -webkit-user-drag: none;">
+                <defs>
+                    <linearGradient id="bodyG" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#e0f7ff" stop-opacity=".18" />
+                        <stop offset="40%" stop-color="#5dd5f8" stop-opacity=".28" />
+                        <stop offset="100%" stop-color="#0369a1" stop-opacity=".35" />
+                    </linearGradient>
+                    <linearGradient id="topG" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity=".22" />
+                        <stop offset="100%" stop-color="#0ea5e9" stop-opacity=".15" />
+                    </linearGradient>
+                    <linearGradient id="wheelG" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#b3ecff" stop-opacity=".5" />
+                        <stop offset="100%" stop-color="#0369a1" stop-opacity=".8" />
+                    </linearGradient>
+                    <linearGradient id="shineG" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+                        <stop offset="40%" stop-color="#ffffff" stop-opacity=".5" />
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <filter id="glowStrong">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <clipPath id="bodyClip">
+                        <path
+                            d="M30 105 Q30 80 50 78 L100 62 L140 38 Q160 28 200 28 Q230 28 250 35 L295 58 L320 68 Q340 72 340 90 L340 108 Z" />
+                    </clipPath>
+                </defs>
+
+                <!-- GLOW UNDER CAR -->
+                <ellipse cx="185" cy="128" rx="130" ry="12" fill="#0ea5e9" opacity=".12" filter="url(#glowStrong)" />
+
+                <!-- CAR BODY -->
+                <path
+                    d="M30 105 Q30 80 50 78 L100 62 L140 38 Q160 28 200 28 Q230 28 250 35 L295 58 L320 68 Q340 72 340 90 L340 108 Z"
+                    fill="url(#bodyG)" stroke="rgba(125,211,252,.5)" stroke-width="1.2" filter="url(#glow)" />
+
+                <!-- ICE TEXTURE ON BODY -->
+                <g clip-path="url(#bodyClip)" opacity=".15">
+                    <line x1="80" y1="110" x2="120" y2="40" stroke="#b3ecff" stroke-width=".8" />
+                    <line x1="120" y1="110" x2="150" y2="35" stroke="#b3ecff" stroke-width=".6" />
+                    <line x1="160" y1="108" x2="175" y2="30" stroke="#b3ecff" stroke-width=".8" />
+                    <line x1="200" y1="108" x2="195" y2="28" stroke="#b3ecff" stroke-width=".6" />
+                    <line x1="240" y1="108" x2="248" y2="36" stroke="#b3ecff" stroke-width=".7" />
+                    <line x1="110" y1="70" x2="260" y2="65" stroke="#b3ecff" stroke-width=".5" />
+                </g>
+
+                <!-- ROOF / CABIN -->
+                <path d="M105 68 L145 38 Q162 28 198 28 Q228 28 246 34 L290 60 L280 68 L220 70 L165 72 Z"
+                    fill="url(#topG)" stroke="rgba(255,255,255,.35)" stroke-width="1" />
+
+                <!-- WINDSHIELD -->
+                <path d="M148 66 L158 40 Q165 30 195 30 Q210 30 220 34 L240 50 L238 66 Z" fill="rgba(179,236,255,.15)"
+                    stroke="rgba(255,255,255,.4)" stroke-width="1" />
+                <path d="M155 62 L163 42 Q167 34 180 32 L195 32 L192 50 L178 64 Z" fill="url(#shineG)" opacity=".5" />
+
+                <!-- REAR WINDOW -->
+                <path d="M108 68 L148 66 L148 55 L132 48 L110 58 Z" fill="rgba(179,236,255,.12)"
+                    stroke="rgba(255,255,255,.25)" stroke-width=".8" />
+
+                <!-- SIDE WINDOW -->
+                <path d="M242 66 L288 62 L280 68 Z" fill="rgba(179,236,255,.1)" stroke="rgba(255,255,255,.2)"
+                    stroke-width=".8" />
+
+                <!-- BODY SHINE -->
+                <path d="M50 90 Q100 82 180 80 Q240 79 310 84" stroke="rgba(255,255,255,.18)" stroke-width="1.5"
+                    fill="none" stroke-linecap="round" />
+
+                <!-- FRONT BUMPER ICE -->
+                <path d="M320 68 Q348 72 350 95 L340 108 Z" fill="rgba(14,165,233,.2)" stroke="rgba(125,211,252,.4)"
+                    stroke-width="1" />
+
+                <!-- REAR BUMPER -->
+                <path d="M30 105 Q18 105 18 112 L40 112 L30 105Z" fill="rgba(14,165,233,.2)"
+                    stroke="rgba(125,211,252,.3)" stroke-width="1" />
+
+                <!-- DOOR LINE -->
+                <path d="M108 108 L108 72 M200 108 L200 70" stroke="rgba(125,211,252,.25)" stroke-width=".8"
+                    fill="none" />
+
+                <!-- HEADLIGHT GLOW -->
+                <ellipse cx="336" cy="82" rx="10" ry="7" fill="#5dd5f8" opacity=".7" filter="url(#glowStrong)" />
+                <ellipse cx="336" cy="82" rx="5" ry="3.5" fill="#ffffff" opacity=".9" />
+
+                <!-- LIGHT BEAM -->
+                <path d="M346 78 L380 60 M346 84 L380 90 M346 82 L390 82" stroke="rgba(179,236,255,.15)"
+                    stroke-width="1.5" fill="none" stroke-linecap="round" />
+
+                <!-- REAR LIGHT -->
+                <rect x="24" y="90" width="8" height="14" rx="3" fill="rgba(239,68,68,.3)" stroke="rgba(239,68,68,.5)"
+                    stroke-width=".8" />
+                <rect x="26" y="93" width="4" height="8" rx="2" fill="rgba(239,68,68,.6)" />
+
+                <!-- WHEEL WELLS -->
+                <path d="M60 108 Q60 120 80 120 Q100 120 100 108" stroke="rgba(125,211,252,.3)" stroke-width="1.5"
+                    fill="rgba(4,26,46,.5)" />
+                <path d="M260 108 Q260 120 280 120 Q300 120 300 108" stroke="rgba(125,211,252,.3)" stroke-width="1.5"
+                    fill="rgba(4,26,46,.5)" />
+
+                <!-- WHEELS -->
+                <g filter="url(#glow)">
+                    <circle cx="280" cy="116" r="20" fill="url(#wheelG)" stroke="rgba(125,211,252,.5)"
+                        stroke-width="1.5" />
+                    <circle cx="280" cy="116" r="13" fill="rgba(4,26,46,.7)" stroke="rgba(93,213,248,.4)"
+                        stroke-width="1" />
+                    <circle cx="280" cy="116" r="5" fill="rgba(125,211,252,.6)" />
+                    <line x1="280" y1="103" x2="280" y2="129" stroke="rgba(125,211,252,.5)" stroke-width="1.5" />
+                    <line x1="267" y1="116" x2="293" y2="116" stroke="rgba(125,211,252,.5)" stroke-width="1.5" />
+                    <line x1="270" y1="106" x2="290" y2="126" stroke="rgba(125,211,252,.3)" stroke-width="1" />
+                    <line x1="270" y1="126" x2="290" y2="106" stroke="rgba(125,211,252,.3)" stroke-width="1" />
+                    <path d="M268 108 Q278 104 288 108" stroke="rgba(255,255,255,.4)" stroke-width="1.5" fill="none" />
+
+                    <circle cx="80" cy="116" r="20" fill="url(#wheelG)" stroke="rgba(125,211,252,.5)"
+                        stroke-width="1.5" />
+                    <circle cx="80" cy="116" r="13" fill="rgba(4,26,46,.7)" stroke="rgba(93,213,248,.4)"
+                        stroke-width="1" />
+                    <circle cx="80" cy="116" r="5" fill="rgba(125,211,252,.6)" />
+                    <line x1="80" y1="103" x2="80" y2="129" stroke="rgba(125,211,252,.5)" stroke-width="1.5" />
+                    <line x1="67" y1="116" x2="93" y2="116" stroke="rgba(125,211,252,.5)" stroke-width="1.5" />
+                    <line x1="70" y1="106" x2="90" y2="126" stroke="rgba(125,211,252,.3)" stroke-width="1" />
+                    <line x1="70" y1="126" x2="90" y2="106" stroke="rgba(125,211,252,.3)" stroke-width="1" />
+                    <path d="M68 108 Q78 104 88 108" stroke="rgba(255,255,255,.4)" stroke-width="1.5" fill="none" />
+                </g>
+
+                <!-- FROST CRYSTALS ON ROOF -->
+                <g opacity=".5" stroke="#b3ecff" stroke-width=".7" fill="none">
+                    <path d="M155 45 L155 55 M152 48 L158 52 M158 48 L152 52" />
+                    <path d="M195 35 L195 43 M192 37 L198 41 M198 37 L192 41" />
+                    <path d="M225 40 L225 48 M222 42 L228 46 M228 42 L222 46" />
+                </g>
+
+                <!-- ICE DRIPS -->
+                <g opacity=".3" fill="#b3ecff">
+                    <ellipse cx="140" cy="108" rx="2" ry="3" />
+                    <ellipse cx="185" cy="107" rx="1.5" ry="2.5" />
+                    <ellipse cx="230" cy="108" rx="2" ry="3" />
+                </g>
+                </svg>
+                <div class="car-shadow"></div>
+            </div>
+
+            <h1 class="hero-name">Simple Warmup</h1>
+            <p class="hero-title">ماشین | سرعت | سبک زندگی</p>
+
+            <div class="hero-cta-row">
+                <button class="btn-ice" data-scroll="contact">ارتباط با ما</button>
+                <button class="btn-ice primary" data-scroll="projects">مشاهده ماشین ها</button>
+                <button class="btn-ice" onclick="window.location.href='chat.html'"> چت ماشین‌بازا</button>
+            </div>
+
+            <div class="hero-scroll"><span>↓</span>اسکرول</div>
+        </section>
+
+        <!-- ===== STATS ===== -->
+        <section class="section" id="stats">
+            <div class="stats-grid">
+                <div class="glass stat-card reveal">
+                    <span class="stat-icon">🚗</span>
+                    <div class="stat-num" data-count="120">۰</div>
+                    <div class="stat-label">خودروی تحویلی</div>
+                </div>
+                <div class="glass stat-card reveal">
+                    <span class="stat-icon">⭐</span>
+                    <div class="stat-num">۹۸٪</div>
+                    <div class="stat-label">رضایت مشتری</div>
+                </div>
+                <div class="glass stat-card reveal">
+                    <span class="stat-icon">🏆</span>
+                    <div class="stat-num">۱۵</div>
+                    <div class="stat-label">سال تجربه</div>
+                </div>
+                <div class="glass stat-card reveal">
+                    <span class="stat-icon">☁️</span>
+                    <div class="stat-num">۴۰+</div>
+                    <div class="stat-label">برند همکار</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CAR FLIP CARDS ===== -->
+        <section class="section" id="cars">
+            <div class="section-label reveal">
+                <h2>ماشین های شما</h2>
+                <p>BEFORE & AFTER TUNING</p>
+                <div class="ice-line"></div>
+            </div>
+
+            <div class="cars-flip-grid">
+
+                <!-- Car 1: بنز S-Class -->
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <!-- Front: Before -->
+                        <div class="flip-card-front">
+                            <div class="flip-badge before">فابریک</div>
+                            <div class="flip-image">
+                                <!-- عکس ماشین فابریک -->
+                                <div class="car-placeholder">🚗</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name">بنز S-Class</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span>۳۶۷ HP</span></div>
+                                    <div class="spec-row"><span>گشتاور:</span><span>۵۰۰ Nm</span></div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span>۵.۸ ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span>۲۵۰ km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span
+                                            class="status-badge stock">Stock</span></div>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+
+                        <!-- Back: After -->
+                        <div class="flip-card-back">
+                            <div class="flip-badge after">تیون شده</div>
+                            <div class="flip-image">
+                                <!-- عکس ماشین تیون شده -->
+                                <div class="car-placeholder tuned">🏎️</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name tuned">بنز S-Class Stage 2</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span class="tuned-val">۵۴۰ HP</span>
+                                    </div>
+                                    <div class="spec-row"><span>گشتاور:</span><span class="tuned-val">۷۸۰ Nm</span>
+                                    </div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span class="tuned-val">۳.۹
+                                            ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span class="tuned-val">۳۲۰
+                                            km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span class="status-badge tuned">Stage
+                                            2</span></div>
+                                </div>
+                                <div class="flip-mod-list">
+                                    <span>ECU Remap</span>
+                                    <span>توربو آپگرید</span>
+                                    <span>Downpipe</span>
+                                    <span>اگزوز اسپرت</span>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car 2: پورشه ۹۱۱ -->
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="flip-badge before">فابریک</div>
+                            <div class="flip-image">
+                                <div class="car-placeholder">🏎️</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name">پورشه ۹۱۱ توربو</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span>۵۸۰ HP</span></div>
+                                    <div class="spec-row"><span>گشتاور:</span><span>۷۵۰ Nm</span></div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span>۲.۸ ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span>۳۲۰ km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span
+                                            class="status-badge stock">Stock</span></div>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+
+                        <div class="flip-card-back">
+                            <div class="flip-badge after">تیون شده</div>
+                            <div class="flip-image">
+                                <div class="car-placeholder tuned">🔥</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name tuned">پورشه ۹۱۱ Turbo S</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span class="tuned-val">۸۵۰ HP</span>
+                                    </div>
+                                    <div class="spec-row"><span>گشتاور:</span><span class="tuned-val">۱۰۲۰ Nm</span>
+                                    </div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span class="tuned-val">۲.۱
+                                            ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span class="tuned-val">۳۸۰
+                                            km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span class="status-badge tuned">Stage
+                                            3</span></div>
+                                </div>
+                                <div class="flip-mod-list">
+                                    <span>Big Turbo</span>
+                                    <span>اینترکولر</span>
+                                    <span>Methanol Kit</span>
+                                    <span>Akrapovic</span>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car 3: BMW M4 -->
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="flip-badge before">فابریک</div>
+                            <div class="flip-image">
+                                <div class="car-placeholder">🚙</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name">BMW M4 Competition</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span>۵۱۰ HP</span></div>
+                                    <div class="spec-row"><span>گشتاور:</span><span>۶۵۰ Nm</span></div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span>۳.۵ ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span>۲۹۰ km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span
+                                            class="status-badge stock">Stock</span></div>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+
+                        <div class="flip-card-back">
+                            <div class="flip-badge after">تیون شده</div>
+                            <div class="flip-image">
+                                <div class="car-placeholder tuned">💨</div>
+                            </div>
+                            <div class="flip-info">
+                                <h3 class="flip-car-name tuned">BMW M4 G-Power</h3>
+                                <div class="flip-specs">
+                                    <div class="spec-row"><span>قدرت موتور:</span><span class="tuned-val">۷۲۰ HP</span>
+                                    </div>
+                                    <div class="spec-row"><span>گشتاور:</span><span class="tuned-val">۹۰۰ Nm</span>
+                                    </div>
+                                    <div class="spec-row"><span>شتاب ۰-۱۰۰:</span><span class="tuned-val">۲.۶
+                                            ثانیه</span></div>
+                                    <div class="spec-row"><span>حداکثر سرعت:</span><span class="tuned-val">۳۳۰
+                                            km/h</span></div>
+                                    <div class="spec-row"><span>تیونینگ:</span><span class="status-badge tuned">Stage
+                                            2</span></div>
+                                </div>
+                                <div class="flip-mod-list">
+                                    <span>ECU Tuning</span>
+                                    <span>Catless DP</span>
+                                    <span>Charge Pipe</span>
+                                    <span>Cold Air Intake</span>
+                                </div>
+                            </div>
+                            <div class="flip-hint">کلیک کن 👆</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== PROJECTS ===== -->
+        <section class="section" id="projects">
+            <div class="section-label reveal">
+                <h2>پروژه‌های منتخب</h2>
+                <p>FEATURED PROJECTS</p>
+                <div class="ice-line"></div>
+            </div>
+            <div class="projects-grid">
+                <div class="glass proj-card reveal">
+                    <span class="proj-tag">☁️ تیونینگ یخی</span>
+                    <div class="proj-title">بنز S‑Class کاملاً یخی</div>
+                    <div class="proj-desc">تبدیل کامل رنگ به فینیش یخی مات، تعویض فنربندی با کیت ورزشی، تیونینگ ECU با
+                        افزایش ۱۸٪ قدرت موتور</div>
+                    <div class="proj-footer">
+                        <div class="proj-tags-row">
+                            <span class="tag">ECU</span>
+                            <span class="tag">بدنه</span>
+                            <span class="tag">سوسپانسیون</span>
+                        </div>
+                        <div class="proj-arrow">→</div>
+                    </div>
+                </div>
+                <div class="glass proj-card reveal">
+                    <span class="proj-tag">🔧 موتور</span>
+                    <div class="proj-title">پورشه ۹۱۱ ری‌بیلد کامل</div>
+                    <div class="proj-desc">بازسازی کامل موتور بوکسر تخت ۶ سیلندر با قطعات اورجینال، بالانس‌کاری دقیق و
+                        تست استرس ۱۰۰ کیلومتری</div>
+                    <div class="proj-footer">
+                        <div class="proj-tags-row">
+                            <span class="tag">ری‌بیلد</span>
+                            <span class="tag">بوکسر</span>
+                        </div>
+                        <div class="proj-arrow">→</div>
+                    </div>
+                </div>
+                <div class="glass proj-card reveal">
+                    <span class="proj-tag">💎 لاکچری</span>
+                    <div class="proj-title">رولز رویس فانتم دتیل</div>
+                    <div class="proj-desc">سرامیک‌کاری ۹ لایه بدنه با پوشش ضدخش نانو، صیقل دادن ۷۲ ساعته و پرداخت داخلی
+                        با چرم ایتالیایی</div>
+                    <div class="proj-footer">
+                        <div class="proj-tags-row">
+                            <span class="tag">سرامیک</span>
+                            <span class="tag">دتیلینگ</span>
+                            <span class="tag">چرم</span>
+                        </div>
+                        <div class="proj-arrow">→</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TIMELINE ===== -->
+        <section class="section" id="timeline">
+            <div class="section-label reveal">
+                <h2>مسیر حرفه‌ای</h2>
+                <p>CAREER TIMELINE</p>
+                <div class="ice-line"></div>
+            </div>
+            <div class="glass timeline-card">
+                <div class="timeline">
+                    <div class="tl-item reveal">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">۱۴۰۳ — اکنون</div>
+                        <div class="tl-title">مدیر فنی گاراژ یخ</div>
+                        <div class="tl-desc">تأسیس و مدیریت کارگاه تخصصی تیونینگ و دتیلینگ یخی در تهران</div>
+                    </div>
+                    <div class="tl-item reveal">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">۱۴۰۰ — ۱۴۰۳</div>
+                        <div class="tl-title">متخصص ارشد بنز ایران</div>
+                        <div class="tl-desc">سرپرستی تیم ۱۲ نفره مکانیک، مسئول تعمیرات گارانتی و آموزش پرسنل</div>
+                    </div>
+                    <div class="tl-item reveal">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">۱۳۹۷ — ۱۴۰۰</div>
+                        <div class="tl-title">تکنسین الکترونیک BMW</div>
+                        <div class="tl-desc">تخصص در سیستم‌های iDrive، تیونینگ ECU و عیب‌یابی پیشرفته CAN-BUS</div>
+                    </div>
+                    <div class="tl-item reveal">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">۱۳۹۲ — ۱۳۹۷</div>
+                        <div class="tl-title">مکانیک عمومی</div>
+                        <div class="tl-desc">شروع کار حرفه‌ای در کارگاه خانوادگی، آموزش پایه مکانیک و سیستم‌های انتقال
+                            قدرت</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section class="section" id="contact">
+            <div class="section-label reveal">
+                <h2>تماس</h2>
+                <p>GET IN TOUCH</p>
+                <div class="ice-line"></div>
+            </div>
+            <div class="contact-grid">
+                <div class="glass contact-card reveal" data-action="call">
+                    <span class="contact-icon">📞</span>
+                    <div class="contact-label">تلفن</div>
+                    <div class="contact-val">۰۹۱۲-XXX-XXXX</div>
+                </div>
+                <div class="glass contact-card reveal">
+                    <span class="contact-icon">📍</span>
+                    <div class="contact-label">آدرس</div>
+                    <div class="contact-val">تهران، جنت‌آباد، گاراژ یخ</div>
+                </div>
+                <div class="glass contact-card reveal" data-action="instagram">
+                    <span class="contact-icon">📸</span>
+                    <div class="contact-label">اینستاگرام</div>
+                    <div class="contact-val">@ice.garage.ir</div>
+                </div>
+                <div class="glass contact-card reveal" data-action="whatsapp">
+                    <span class="contact-icon">💬</span>
+                    <div class="contact-label">واتساپ</div>
+                    <div class="contact-val">پیام مستقیم</div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== PARTS SHOP ===== -->
+    <section class="section" id="shop">
+        <div class="section-label reveal">
+            <h2>فروشگاه قطعات</h2>
+            <p>PERFORMANCE PARTS SHOP</p>
+            <div class="ice-line"></div>
+        </div>
+
+        <div class="shop-grid">
+            <!-- Part 1 -->
+            <div class="glass shop-card reveal">
+                <div class="shop-badge hot">پرطرفدار</div>
+                <div class="shop-icon">🔧</div>
+                <h3 class="shop-title">Downpipe اسپرت</h3>
+                <p class="shop-desc">خروج کامل گازهای خروجی | افزایش ۲۵HP</p>
+                <div class="shop-specs">
+                    <span>مناسب: بنز، BMW، پورشه</span>
+                    <span>جنس: استیل ۳۰۴</span>
+                </div>
+                <div class="shop-footer">
+                    <span class="shop-price">۱۲,۰۰۰,۰۰۰ تومان</span>
+                    <button class="btn-ice shop-btn">🛒 خرید</button>
+                </div>
+            </div>
+
+            <!-- Part 2 -->
+            <div class="glass shop-card reveal">
+                <div class="shop-badge new">جدید</div>
+                <div class="shop-icon">💨</div>
+                <h3 class="shop-title">Cold Air Intake</h3>
+                <p class="shop-desc">هوای سرد بیشتر | افزایش ۱۵HP</p>
+                <div class="shop-specs">
+                    <span>مناسب: تمام خودروها</span>
+                    <span>فیلتر: K&N</span>
+                </div>
+                <div class="shop-footer">
+                    <span class="shop-price">۸,۵۰۰,۰۰۰ تومان</span>
+                    <button class="btn-ice shop-btn">🛒 خرید</button>
+                </div>
+            </div>
+
+            <!-- Part 3 -->
+            <div class="glass shop-card reveal">
+                <div class="shop-icon">🎵</div>
+                <h3 class="shop-title">اگزوز تیتانیوم</h3>
+                <p class="shop-desc">صدای عمیق و اسپرت | کاهش وزن ۱۲kg</p>
+                <div class="shop-specs">
+                    <span>برند: Akrapovic</span>
+                    <span>مناسب: پورشه ۹۱۱</span>
+                </div>
+                <div class="shop-footer">
+                    <span class="shop-price">۲۵,۰۰۰,۰۰۰ تومان</span>
+                    <button class="btn-ice shop-btn">🛒 خرید</button>
+                </div>
+            </div>
+
+            <!-- Part 4 -->
+            <div class="glass shop-card reveal">
+                <div class="shop-badge sale">حراج!</div>
+                <div class="shop-icon">⚡</div>
+                <h3 class="shop-title">ECU Remap Stage 2</h3>
+                <p class="shop-desc">تیونینگ حرفه‌ای | افزایش ۸۰HP</p>
+                <div class="shop-specs">
+                    <span>گارانتی: ۶ ماه</span>
+                    <span>زمان: ۲ ساعت</span>
+                </div>
+                <div class="shop-footer">
+                    <span class="shop-price">۱۵,۰۰۰,۰۰۰ تومان</span>
+                    <button class="btn-ice shop-btn">🛒 خرید</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== LIVE CHAT PREVIEW ===== -->
+    <section class="section" id="chat-preview">
+        <div class="section-label reveal">
+            <h2>چت ماشین‌بازها</h2>
+            <p>LIVE CHAT COMMUNITY</p>
+            <div class="ice-line"></div>
+        </div>
+
+        <div class="glass chat-preview-card reveal">
+            <div class="chat-preview-header">
+                <span>💬 چت آنلاین</span>
+                <span class="online-dot"></span>
+                <span id="onlineCount">۱۲ نفر آنلاین</span>
+            </div>
+
+            <div class="chat-preview-messages" id="chatMessages">
+                <div class="chat-msg">
+                    <span class="msg-user">🚗 علی:</span>
+                    <span class="msg-text">کی داون‌پایپ روی بنز نصب کرده؟</span>
+                    <span class="msg-time">۲ دقیقه پیش</span>
+                </div>
+                <div class="chat-msg">
+                    <span class="msg-user">🏎️ محمد:</span>
+                    <span class="msg-text">من پارسال نصب کردم، صداش عالی شده!</span>
+                    <span class="msg-time">۱ دقیقه پیش</span>
+                </div>
+                <div class="chat-msg">
+                    <span class="msg-user">⚡ سارا:</span>
+                    <span class="msg-text">پورشه ۹۱۱ با استیج ۲ چند اسب بخار میگیره؟</span>
+                    <span class="msg-time">همین الان</span>
+                </div>
+            </div>
+
+            <div class="chat-preview-input">
+                <input type="text" placeholder="پیام خود را بنویسید..." id="chatPreviewInput">
+                <button class="btn-ice" id="sendPreviewChat">📨 ارسال</button>
+            </div>
+
+            <div class="chat-preview-cta">
+                <p>برای چت کامل و گروه‌های تخصصی عضو شوید 👇</p>
+                <button class="btn-ice primary" id="joinChatBtn">💬 ورود به چت</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">☁️ C Blu — تمامی حقوق محفوظ است © 1405</footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

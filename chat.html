@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت ماشین‌بازها | Simple Warmup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ================= CHAT PAGE STYLES ================= */
+        .chat-page-body {
+            background: #041a2e;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Sidebar */
+        .chat-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(93, 213, 248, 0.04));
+            border-left: 1px solid rgba(125, 211, 252, 0.15);
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(125, 211, 252, 0.1);
+        }
+
+        .sidebar-header h3 {
+            color: var(--ice2);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .back-btn {
+            color: var(--ice3);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(14, 165, 233, 0.3);
+            color: #fff;
+        }
+
+        /* User Card */
+        .user-card-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar-mini {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .user-name-input {
+            background: none;
+            border: none;
+            color: var(--ice2);
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .user-name-input::placeholder {
+            color: rgba(179, 236, 255, 0.3);
+        }
+
+        /* Groups */
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section h4 {
+            color: rgba(179, 236, 255, 0.4);
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .group-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        .group-item.active {
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(125, 211, 252, 0.3);
+        }
+
+        .group-icon {
+            font-size: 20px;
+        }
+
+        .group-name {
+            color: var(--ice2);
+            font-size: 13px;
+            display: block;
+        }
+
+        .group-count {
+            color: rgba(179, 236, 255, 0.3);
+            font-size: 10px;
+        }
+
+        /* Main Chat */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(14, 165, 233, 0.04);
+            border-left: 1px solid rgba(125, 211, 252, 0.1);
+            border-right: 1px solid rgba(125, 211, 252, 0.1);
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(14, 165, 233, 0.08);
+            border-bottom: 1px solid rgba(125, 211, 252, 0.1);
+        }
+
+        .chat-header h2 {
+            font-size: 18px;
+            color: var(--ice2);
+            margin: 0;
+        }
+
+        .online-count {
+            font-size: 11px;
+            color: rgba(179, 236, 255, 0.4);
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            animation: onlinePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes onlinePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            display: flex;
+            gap: 8px;
+            max-width: 70%;
+            animation: msgIn 0.3s ease;
+        }
+
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .message:not(.own) .msg-bubble {
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            border-bottom-right-radius: 4px;
+            color: var(--ice2);
+        }
+
+        .message.own .msg-bubble {
+            background: rgba(93, 213, 248, 0.2);
+            border: 1px solid rgba(93, 213, 248, 0.3);
+            border-bottom-left-radius: 4px;
+            color: #fff;
+        }
+
+        .msg-info {
+            display: flex;
+            gap: 6px;
+            font-size: 10px;
+            color: rgba(179, 236, 255, 0.3);
+            margin-bottom: 2px;
+        }
+
+        .message.own .msg-info {
+            justify-content: flex-end;
+        }
+
+        /* Input */
+        .chat-input-area {
+            padding: 16px 20px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(14, 165, 233, 0.08);
+            border-top: 1px solid rgba(125, 211, 252, 0.1);
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(125, 211, 252, 0.25);
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--ice2);
+            font-size: 14px;
+            font-family: 'Vazirmatn', sans-serif;
+            outline: none;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--ice3);
+            box-shadow: 0 0 0 2px rgba(93, 213, 248, 0.15);
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            border: 1px solid rgba(93, 213, 248, 0.4);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(93, 213, 248, 0.15));
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            box-shadow: 0 0 25px rgba(93, 213, 248, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-sidebar {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 200;
+                width: 260px;
+            }
+
+            .chat-sidebar.open {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: block !important;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--ice2);
+            font-size: 22px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="chat-page-body">
+
+    <!-- MIST -->
+    <div class="mist-layer">
+        <div class="mist mist-1"></div>
+        <div class="mist mist-2"></div>
+        <div class="mist mist-3"></div>
+    </div>
+
+    <div class="chat-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="chat-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>🏎️ چت ماشین‌بازها</h3>
+                <a href="index.html" class="back-btn">← برگشت</a>
+            </div>
+
+            <div class="user-card-mini">
+                <div class="user-avatar-mini">👤</div>
+                <input 
+                    type="text" 
+                    class="user-name-input" 
+                    id="usernameInput" 
+                    placeholder="اسم خودت رو بنویس..."
+                    maxlength="20"
+                >
+            </div>
+
+            <div class="sidebar-section">
+                <h4>گروه‌ها</h4>
+                <div class="group-item active" data-group="general">
+                    <span class="group-icon">💬</span>
+                    <div>
+                        <span class="group-name">عمومی</span>
+                        <span class="group-count">۱۲ آنلاین</span>
+                    </div>
+                </div>
+                <div class="group-item" data-group="tuning">
+                    <span class="group-icon">🔧</span>
+                    <div>
+                        <span class="group-name">تیونینگ</span>
+                        <span class="group-count">۸ آنلاین</span>
+                    </div>
+                </div>
+                <div class="group-item" data-group="turbo">
+                    <span class="group-icon">💨</span>
+                    <div>
+                        <span class="group-name">توربو چت</span>
+                        <span class="group-count">۵ آنلاین</span>
+                    </div>
+                </div>
+                <div class="group-item" data-group="sound">
+                    <span class="group-icon">🎵</span>
+                    <div>
+                        <span class="group-name">صدای اگزوز</span>
+                        <span class="group-count">۳ آنلاین</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CHAT -->
+        <main class="chat-main">
+            <div class="chat-header">
+                <button class="mobile-toggle" id="menuToggle">☰</button>
+                <div>
+                    <h2 id="groupTitle">💬 عمومی</h2>
+                    <span class="online-count" id="onlineCount">۱۲ نفر آنلاین</span>
+                </div>
+                <span class="online-dot"></span>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages load here -->
+            </div>
+
+            <div class="chat-input-area">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="پیامت رو بنویس..."
+                    autocomplete="off"
+                    maxlength="500"
+                >
+                <button class="send-btn" id="sendBtn">📨</button>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        /* ==================== CHAT APP ==================== */
+        (function() {
+            // ===== DOM Elements =====
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const usernameInput = document.getElementById('usernameInput');
+            const groupTitle = document.getElementById('groupTitle');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const onlineCount = document.getElementById('onlineCount');
+
+            // ===== State =====
+            let currentGroup = 'general';
+            let username = localStorage.getItem('chat_username') || '';
+
+            // Load username
+            if (username) {
+                usernameInput.value = username;
+            }
+
+            // Save username on change
+            usernameInput.addEventListener('input', () => {
+                username = usernameInput.value.trim();
+                localStorage.setItem('chat_username', username);
+            });
+
+            // ===== Load Messages =====
+            function getMessages() {
+                const key = `chat_messages_${currentGroup}`;
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            }
+
+            function saveMessages(messages) {
+                const key = `chat_messages_${currentGroup}`;
+                // Keep only last 200 messages
+                const trimmed = messages.slice(-200);
+                localStorage.setItem(key, JSON.stringify(trimmed));
+            }
+
+            // ===== Render Messages =====
+            function renderMessages() {
+                const messages = getMessages();
+                const savedUsername = localStorage.getItem('chat_username') || 'ناشناس';
+                
+                chatMessages.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    chatMessages.innerHTML = `
+                        <div style="text-align:center; color:rgba(179,236,255,0.3); padding:40px;">
+                            <div style="font-size:40px; margin-bottom:12px;">💬</div>
+                            <p>هنوز پیامی نیست!</p>
+                            <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                messages.forEach(msg => {
+                    const isOwn = msg.username === savedUsername;
+                    const div = document.createElement('div');
+                    div.className = `message ${isOwn ? 'own' : ''}`;
+                    div.innerHTML = `
+                        <div class="msg-avatar">${msg.avatar || '👤'}</div>
+                        <div>
+                            <div class="msg-info">
+                                <span>${msg.username}</span>
+                                <span>${msg.time}</span>
+                            </div>
+                            <div class="msg-bubble">${escapeHtml(msg.text)}</div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(div);
+                });
+
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // ===== Send Message =====
+            function sendMessage() {
+                const text = messageInput.value.trim();
+                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                
+                if (!text) return;
+
+                const message = {
+                    id: Date.now(),
+                    username: name,
+                    avatar: getAvatar(name),
+                    text: text,
+                    time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+                    group: currentGroup
+                };
+
+                const messages = getMessages();
+                messages.push(message);
+                saveMessages(messages);
+
+                messageInput.value = '';
+                renderMessages();
+            }
+
+            function getAvatar(name) {
+                const avatars = ['🚗', '🏎️', '🚙', '🔥', '💨', '⚡', '🔧', '🎵'];
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) {
+                    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return avatars[Math.abs(hash) % avatars.length];
+            }
+
+            // ===== Group Switch =====
+            document.querySelectorAll('.group-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentGroup = item.dataset.group;
+                    groupTitle.textContent = item.querySelector('.group-name').textContent;
+                    renderMessages();
+                    
+                    // Close sidebar on mobile
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+
+            // ===== Event Listeners =====
+            sendBtn.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Update online count randomly
+            function updateOnlineCount() {
+                const counts = {
+                    general: Math.floor(Math.random() * 10) + 8,
+                    tuning: Math.floor(Math.random() * 8) + 5,
+                    turbo: Math.floor(Math.random() * 6) + 3,
+                    sound: Math.floor(Math.random() * 4) + 2
+                };
+                onlineCount.textContent = `${counts[currentGroup]} نفر آنلاین`;
+                
+                document.querySelectorAll('.group-count').forEach(count => {
+                    const group = count.closest('.group-item').dataset.group;
+                    count.textContent = `${counts[group]} آنلاین`;
+                });
+            }
+
+            // ===== Auto Refresh =====
+            setInterval(renderMessages, 3000); // Refresh every 3 seconds
+            setInterval(updateOnlineCount, 10000); // Update online count
+
+            // ===== Init =====
+            renderMessages();
+            updateOnlineCount();
+
+            console.log('🏎️ چت ماشین‌بازها آماده‌ست!');
+        })();
+    </script>
+</body>
+</html>
