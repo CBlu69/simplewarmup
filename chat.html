@@ -786,13 +786,26 @@
                     }
 
                     showConfirm('این پیام حذف بشه؟', async () => {
-                        const { error } = await supabaseClient.from('messages').delete().eq('id', msg.id);
-                        if (error) {
-                            console.error('خطا در حذف:', error);
+                        const { error } = await supabaseClient
+                            .from('messages')
+                            .delete()
+                            .eq('id', msg.id);
+
+                        if (!error) {
+                            // حذف فوری از صفحه
+                            const el = document.getElementById(`msg-${msg.id}`);
+                            if (el) {
+                                el.style.opacity = '0';
+                                el.style.transform = 'scale(0.8)';
+                                el.style.transition = '0.3s';
+                                setTimeout(() => {
+                                    el.remove();
+                                    renderedIds.delete(msg.id);
+                                }, 300);
+                            }
                         }
                     });
                 }
-
                 async function sendMessage() {
                     const text = messageInput.value.trim();
                     if (!text) return;
