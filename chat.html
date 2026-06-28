@@ -3,77 +3,519 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>چت ماشین‌بازها | Simple Warmup</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --ice1: #e0f7ff; --ice2: #b3ecff; --ice3: #5dd5f8; --ice4: #0ea5e9; --safe-bottom: env(safe-area-inset-bottom, 0px); }
-        .chat-page-body { background: #041a2e; height: 100vh; height: 100dvh; overflow: hidden; position: fixed; inset: 0; font-family: 'Vazirmatn', sans-serif; }
-        .chat-container { display: flex; width: 100%; height: 100%; position: relative; z-index: 2; }
-        .chat-sidebar { width: 260px; background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(93,213,248,0.04)); border-left: 1px solid rgba(125,211,252,0.15); backdrop-filter: blur(30px); display: flex; flex-direction: column; padding: 20px; overflow-y: auto; flex-shrink: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(125,211,252,0.1); }
-        .sidebar-header h3 { color: var(--ice2); font-size: 16px; margin: 0; }
-        .back-btn { color: var(--ice3); text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 8px; background: rgba(14,165,233,0.15); border: 1px solid rgba(125,211,252,0.2); transition: 0.3s; }
-        .back-btn:hover { background: rgba(14,165,233,0.3); color: #fff; }
-        .display-username { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(14,165,233,0.15); border: 1px solid rgba(125,211,252,0.25); border-radius: 30px; color: var(--ice2); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .admin-badge { font-size: 16px; animation: glow 2s ease-in-out infinite; }
-        @keyframes glow { 0%,100% { filter: drop-shadow(0 0 3px gold); } 50% { filter: drop-shadow(0 0 8px gold); } }
-        .logout-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); color: #fca5a5; font-size: 12px; cursor: pointer; font-family: 'Vazirmatn', sans-serif; transition: 0.3s; margin-bottom: 20px; width: 100%; justify-content: center; }
-        .logout-btn:hover { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); color: #fecaca; }
-        .sidebar-section { margin-bottom: 20px; }
-        .sidebar-section h4 { color: rgba(179,236,255,0.4); font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; }
-        .group-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 4px; }
-        .group-item:hover { background: rgba(14,165,233,0.1); }
-        .group-item.active { background: rgba(14,165,233,0.2); border: 1px solid rgba(125,211,252,0.3); }
-        .group-icon { font-size: 20px; }
-        .group-name { color: var(--ice2); font-size: 13px; display: block; }
-        .group-count { color: rgba(179,236,255,0.3); font-size: 10px; }
-        .chat-main { flex: 1; display: flex; flex-direction: column; background: rgba(14,165,233,0.04); border-left: 1px solid rgba(125,211,252,0.1); border-right: 1px solid rgba(125,211,252,0.1); min-width: 0; }
-        .chat-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; background: rgba(14,165,233,0.08); border-bottom: 1px solid rgba(125,211,252,0.1); flex-shrink: 0; }
-        .chat-header h2 { font-size: 16px; color: var(--ice2); margin: 0; }
-        .online-count { font-size: 10px; color: rgba(179,236,255,0.4); }
-        .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.5); animation: onlinePulse 2s ease-in-out infinite; }
-        @keyframes onlinePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 6px; -webkit-overflow-scrolling: touch; }
-        .message { display: flex; gap: 6px; max-width: 80%; animation: msgIn 0.3s ease; position: relative; }
-        .message.own { align-self: flex-end; flex-direction: row-reverse; }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(14,165,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-        .msg-bubble { padding: 8px 12px; border-radius: 14px; font-size: 13px; line-height: 1.6; word-break: break-word; }
-        .message:not(.own) .msg-bubble { background: rgba(14,165,233,0.15); border: 1px solid rgba(125,211,252,0.2); border-bottom-right-radius: 4px; color: var(--ice2); }
-        .message.own .msg-bubble { background: rgba(93,213,248,0.2); border: 1px solid rgba(93,213,248,0.3); border-bottom-left-radius: 4px; color: #fff; }
-        .msg-info { display: flex; gap: 4px; font-size: 9px; color: rgba(179,236,255,0.3); margin-bottom: 2px; }
-        .message.own .msg-info { justify-content: flex-end; }
-        .edited-badge { font-size: 8px; color: rgba(179,236,255,0.25); }
-        .msg-actions { display: none; position: absolute; top: -8px; gap: 2px; z-index: 5; }
-        .message.own .msg-actions { left: 0; }
-        .message:not(.own) .msg-actions { right: 0; }
-        .message:hover .msg-actions { display: flex; }
-        .msg-action-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(125,211,252,0.3); background: rgba(4,26,46,0.85); color: var(--ice3); font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .msg-action-btn.delete:hover { background: rgba(239,68,68,0.3); border-color: #ef4444; color: #fca5a5; }
-        .edit-input { width: 100%; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(93,213,248,0.4); background: rgba(14,165,233,0.2); color: #fff; font-size: 12px; font-family: 'Vazirmatn', sans-serif; outline: none; margin-bottom: 4px; }
-        .edit-actions { display: flex; gap: 4px; }
-        .edit-actions button { padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(125,211,252,0.3); background: rgba(14,165,233,0.2); color: var(--ice2); font-size: 10px; cursor: pointer; font-family: 'Vazirmatn', sans-serif; }
-        .chat-input-area { padding: 10px 12px; padding-bottom: calc(10px + var(--safe-bottom)); display: flex; gap: 8px; align-items: center; background: rgba(14,165,233,0.1); border-top: 1px solid rgba(125,211,252,0.15); flex-shrink: 0; }
-        .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid rgba(125,211,252,0.25); background: rgba(14,165,233,0.12); color: var(--ice2); font-size: 14px; font-family: 'Vazirmatn', sans-serif; outline: none; }
-        .chat-input-area input:focus { border-color: var(--ice3); }
-        .send-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(93,213,248,0.4); background: linear-gradient(135deg, rgba(14,165,233,0.3), rgba(93,213,248,0.15)); color: #fff; font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .send-btn:hover { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-        .mobile-toggle { display: none; background: none; border: none; color: var(--ice2); font-size: 20px; cursor: pointer; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ice1: #e0f7ff;
+            --ice2: #b3ecff;
+            --ice3: #5dd5f8;
+            --ice4: #0ea5e9;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .chat-page-body {
+            background: #041a2e;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            position: fixed;
+            inset: 0;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .chat-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chat-sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(93, 213, 248, 0.04));
+            border-left: 1px solid rgba(125, 211, 252, 0.15);
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(125, 211, 252, 0.1);
+        }
+
+        .sidebar-header h3 {
+            color: var(--ice2);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .back-btn {
+            color: var(--ice3);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(14, 165, 233, 0.3);
+            color: #fff;
+        }
+
+        .display-username {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(125, 211, 252, 0.25);
+            border-radius: 30px;
+            color: var(--ice2);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .admin-badge {
+            font-size: 16px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 3px gold);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 8px gold);
+            }
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+            transition: 0.3s;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fecaca;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section h4 {
+            color: rgba(179, 236, 255, 0.4);
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .group-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        .group-item.active {
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(125, 211, 252, 0.3);
+        }
+
+        .group-icon {
+            font-size: 20px;
+        }
+
+        .group-name {
+            color: var(--ice2);
+            font-size: 13px;
+            display: block;
+        }
+
+        .group-count {
+            color: rgba(179, 236, 255, 0.3);
+            font-size: 10px;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(14, 165, 233, 0.04);
+            border-left: 1px solid rgba(125, 211, 252, 0.1);
+            border-right: 1px solid rgba(125, 211, 252, 0.1);
+            min-width: 0;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(14, 165, 233, 0.08);
+            border-bottom: 1px solid rgba(125, 211, 252, 0.1);
+            flex-shrink: 0;
+        }
+
+        .chat-header h2 {
+            font-size: 16px;
+            color: var(--ice2);
+            margin: 0;
+        }
+
+        .online-count {
+            font-size: 10px;
+            color: rgba(179, 236, 255, 0.4);
+        }
+
+        .online-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            animation: onlinePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes onlinePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            display: flex;
+            gap: 6px;
+            max-width: 80%;
+            animation: msgIn 0.3s ease;
+            position: relative;
+        }
+
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .msg-bubble {
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .message:not(.own) .msg-bubble {
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            border-bottom-right-radius: 4px;
+            color: var(--ice2);
+        }
+
+        .message.own .msg-bubble {
+            background: rgba(93, 213, 248, 0.2);
+            border: 1px solid rgba(93, 213, 248, 0.3);
+            border-bottom-left-radius: 4px;
+            color: #fff;
+        }
+
+        .msg-info {
+            display: flex;
+            gap: 4px;
+            font-size: 9px;
+            color: rgba(179, 236, 255, 0.3);
+            margin-bottom: 2px;
+        }
+
+        .message.own .msg-info {
+            justify-content: flex-end;
+        }
+
+        .edited-badge {
+            font-size: 8px;
+            color: rgba(179, 236, 255, 0.25);
+        }
+
+        .msg-actions {
+            display: none;
+            position: absolute;
+            top: -8px;
+            gap: 2px;
+            z-index: 5;
+        }
+
+        .message.own .msg-actions {
+            left: 0;
+        }
+
+        .message:not(.own) .msg-actions {
+            right: 0;
+        }
+
+        .message:hover .msg-actions {
+            display: flex;
+        }
+
+        .msg-action-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            background: rgba(4, 26, 46, 0.85);
+            color: var(--ice3);
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .msg-action-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(93, 213, 248, 0.4);
+            background: rgba(14, 165, 233, 0.2);
+            color: #fff;
+            font-size: 12px;
+            font-family: 'Vazirmatn', sans-serif;
+            outline: none;
+            margin-bottom: 4px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .edit-actions button {
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            background: rgba(14, 165, 233, 0.2);
+            color: var(--ice2);
+            font-size: 10px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .chat-input-area {
+            padding: 10px 12px;
+            padding-bottom: calc(10px + var(--safe-bottom));
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(14, 165, 233, 0.1);
+            border-top: 1px solid rgba(125, 211, 252, 0.15);
+            flex-shrink: 0;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(125, 211, 252, 0.25);
+            background: rgba(14, 165, 233, 0.12);
+            color: var(--ice2);
+            font-size: 14px;
+            font-family: 'Vazirmatn', sans-serif;
+            outline: none;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--ice3);
+        }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(93, 213, 248, 0.4);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(93, 213, 248, 0.15));
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        }
+
+        /* Mobile */
+        .mobile-toggle {
+            display: none;
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            color: var(--ice2);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 300;
+            position: relative;
+        }
+
         @media (max-width: 768px) {
-            .chat-sidebar { display: none; position: fixed; left: 0; top: 0; bottom: 0; z-index: 200; width: 260px; }
-            .chat-sidebar.open { display: flex; }
-            .mobile-toggle { display: block; }
-            .message { max-width: 88%; }
-            .chat-header { padding: 10px 12px; }
-            .chat-messages { padding: 12px; gap: 4px; }
-            .msg-bubble { font-size: 12px; padding: 7px 10px; }
-            .chat-input-area { padding: 8px 10px; padding-bottom: calc(8px + var(--safe-bottom)); }
-            .chat-input-area input { padding: 8px 12px; font-size: 13px; }
-            .send-btn { width: 38px; height: 38px; font-size: 16px; }
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                flex-shrink: 0;
+            }
+
+            .chat-sidebar {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 200;
+                width: 280px;
+            }
+
+            .chat-sidebar.open {
+                display: flex;
+            }
+        }
+
+        .mobile-toggle {
+            display: block;
+        }
+
+        .message {
+            max-width: 88%;
+        }
+
+        .chat-header {
+            padding: 10px 12px;
+        }
+
+        .chat-messages {
+            padding: 12px;
+            gap: 4px;
+        }
+
+        .msg-bubble {
+            font-size: 12px;
+            padding: 7px 10px;
+        }
+
+        .chat-input-area {
+            padding: 8px 10px;
+            padding-bottom: calc(8px + var(--safe-bottom));
+        }
+
+        .chat-input-area input {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .send-btn {
+            width: 38px;
+            height: 38px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -116,7 +558,6 @@
                 </div>
             </div>
         </aside>
-
         <main class="chat-main">
             <div class="chat-header">
                 <button class="mobile-toggle" id="menuToggle">☰</button>
@@ -126,248 +567,249 @@
                 </div>
                 <span class="online-dot"></span>
             </div>
+
             <div class="chat-messages" id="chatMessages"></div>
+
             <div class="chat-input-area">
                 <input type="text" id="messageInput" placeholder="پیامت رو بنویس..." autocomplete="off" maxlength="500">
                 <button class="send-btn" id="sendBtn">📨</button>
             </div>
         </main>
 
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
-    <script>
-        const supabase = supabaseClient;
-        (async function () {
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="auth.js"></script>
+        <script>
+            (async function () {
+                const supabase = supabaseClient;
 
-            // ===== چک لاگین =====
-            const user = await checkAuth();
-            if (!user) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            const username = user.username;
-            const userId = user.id;
-
-            // ===== DOM ELEMENTS =====
-            const chatMessages = document.getElementById('chatMessages');
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const groupTitle = document.getElementById('groupTitle');
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const onlineCount = document.getElementById('onlineCount');
-
-            let currentGroup = 'general';
-            const renderedIds = new Set();
-            let channel = null;
-
-            // نمایش اطلاعات کاربر
-            document.getElementById('userAvatar').textContent = user.avatar || '👤';
-            document.getElementById('userName').textContent = username;
-            if (user.role === 'admin') {
-                document.getElementById('adminBadge').style.display = 'inline';
-            }
-
-            // دکمه خروج
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await logoutUser();
-                window.location.href = 'index.html';
-            });
-
-            // ===== ONLINE SYSTEM =====
-            async function broadcastPresence() {
-                await supabase.from('online_users').upsert({
-                    user_id: userId,
-                    username: username,
-                    avatar: user.avatar,
-                    group_name: currentGroup,
-                    last_seen: new Date().toISOString()
-                }, { onConflict: 'user_id' });
-            }
-
-            async function cleanupOnlineUsers() {
-                const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
-                await supabase.from('online_users').delete().lt('last_seen', tenSecondsAgo);
-            }
-
-            async function updateOnlineDisplay() {
-                const { data: users } = await supabase.from('online_users').select('*');
-                if (!users) return;
-                const totalOnline = users.length;
-                if (onlineCount) onlineCount.textContent = `${totalOnline} نفر آنلاین`;
-                document.querySelectorAll('.group-item').forEach(item => {
-                    const g = item.dataset.group;
-                    const count = users.filter(u => u.group_name === g).length;
-                    const el = item.querySelector('.group-count');
-                    if (el) el.textContent = `${count} آنلاین`;
-                });
-            }
-
-            // ===== MESSAGES =====
-            async function loadAllMessages() {
-                const { data: messages } = await supabase
-                    .from('messages')
-                    .select('*')
-                    .eq('group_name', currentGroup)
-                    .order('created_at', { ascending: true })
-                    .limit(200);
-
-                chatMessages.innerHTML = '';
-                renderedIds.clear();
-
-                if (!messages || messages.length === 0) {
-                    chatMessages.innerHTML = `<div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;"><div style="font-size:40px;margin-bottom:12px;">💬</div><p>هنوز پیامی نیست!</p><p style="font-size:12px;">اولین نفر باش که پیام میده</p></div>`;
+                // ===== چک لاگین =====
+                const user = await checkAuth();
+                if (!user) {
+                    window.location.href = 'index.html';
                     return;
                 }
 
-                messages.forEach(msg => appendMessage(msg));
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+                const username = user.username;
+                const userId = user.id;
 
-            function subscribeToRealtime() {
-                if (channel) supabase.removeChannel(channel);
-                channel = supabase
-                    .channel(`messages-${currentGroup}`)
-                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                        const msg = payload.new;
-                        if (!renderedIds.has(msg.id)) {
-                            appendMessage(msg);
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
-                    })
-                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                        const msg = payload.new;
-                        const bubble = document.getElementById(`bubble-${msg.id}`);
-                        if (bubble) {
-                            bubble.textContent = msg.message;
-                            const infoDiv = document.getElementById(`msg-${msg.id}`)?.querySelector('.msg-info');
-                            if (infoDiv && msg.edited) {
-                                infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span>`;
-                            }
-                        }
-                    })
-                    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                        const deletedId = payload.old.id;
-                        const el = document.getElementById(`msg-${deletedId}`);
-                        if (el) {
-                            el.style.opacity = '0'; el.style.transform = 'scale(0.8)'; el.style.transition = '0.3s';
-                            setTimeout(() => { el.remove(); renderedIds.delete(deletedId); }, 300);
-                        }
-                    })
-                    .subscribe();
-            }
+                // ===== DOM ELEMENTS =====
+                const chatMessages = document.getElementById('chatMessages');
+                const messageInput = document.getElementById('messageInput');
+                const sendBtn = document.getElementById('sendBtn');
+                const groupTitle = document.getElementById('groupTitle');
+                const menuToggle = document.getElementById('menuToggle');
+                const sidebar = document.getElementById('sidebar');
+                const onlineCount = document.getElementById('onlineCount');
 
-            function subscribeToPresence() {
-                supabase.channel('online-users').on('postgres_changes', { event: '*', schema: 'public', table: 'online_users' }, () => updateOnlineDisplay()).subscribe();
-            }
+                let currentGroup = 'general';
+                const renderedIds = new Set();
+                let channel = null;
 
-            function escapeHtml(t) {
-                const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
-            }
-
-            function appendMessage(msg) {
-                if (renderedIds.has(msg.id)) return;
-                const isOwn = msg.username === username;
-                const div = document.createElement('div');
-                div.className = `message ${isOwn ? 'own' : ''}`;
-                div.id = `msg-${msg.id}`;
-                div.innerHTML = `<div class="msg-avatar">${msg.avatar || '👤'}</div><div class="msg-content"><div class="msg-info"><span>${msg.username}</span>${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}<span>${new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}</span></div><div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.message)}</div>${isOwn ? `<div class="msg-actions"><button class="msg-action-btn edit" data-id="${msg.id}">✏️</button><button class="msg-action-btn delete" data-id="${msg.id}">🗑</button></div>` : ''}</div>`;
-                chatMessages.appendChild(div);
-                renderedIds.add(msg.id);
-                if (isOwn) {
-                    div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg));
-                    div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg));
+                // نمایش اطلاعات کاربر
+                document.getElementById('userAvatar').textContent = user.avatar || '👤';
+                document.getElementById('userName').textContent = username;
+                if (user.role === 'admin') {
+                    document.getElementById('adminBadge').style.display = 'inline';
                 }
-            }
 
-            function editMessage(msg) {
-                const bubble = document.getElementById(`bubble-${msg.id}`);
-                if (!bubble) return;
-                const old = msg.message;
-                bubble.innerHTML = `<input class="edit-input" id="ei-${msg.id}" value="${escapeHtml(old)}" maxlength="500"><div class="edit-actions"><button id="se-${msg.id}">💾 ذخیره</button><button id="ce-${msg.id}">لغو</button></div>`;
-                document.getElementById(`se-${msg.id}`).onclick = async () => {
-                    const nt = document.getElementById(`ei-${msg.id}`).value.trim();
-                    if (nt && nt !== old) {
-                        await supabase.from('messages').update({ message: nt, edited: true }).eq('id', msg.id);
-                    }
-                    bubble.textContent = nt || old;
-                };
-                document.getElementById(`ce-${msg.id}`).onclick = () => { bubble.textContent = old; };
-                document.getElementById(`ei-${msg.id}`).focus();
-                document.getElementById(`ei-${msg.id}`).addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById(`se-${msg.id}`).click(); });
-            }
-
-            async function deleteMessage(msg) {
-                if (confirm('این پیام حذف بشه؟')) {
-                    await supabase.from('messages').delete().eq('id', msg.id);
-                }
-            }
-
-            async function sendMessage() {
-                const text = messageInput.value.trim();
-                if (!text) return;
-                const { error } = await supabase.from('messages').insert({
-                    user_id: userId, username, avatar: user.avatar,
-                    group_name: currentGroup, message: text, edited: false
+                // دکمه خروج
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    await logoutUser();
+                    window.location.href = 'index.html';
                 });
-                if (!error) messageInput.value = '';
-            }
 
-            function switchGroup(group) {
-                currentGroup = group;
-                document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
-                document.querySelector(`[data-group="${group}"]`)?.classList.add('active');
-                groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
-                chatMessages.innerHTML = '';
-                renderedIds.clear();
-                loadAllMessages();
-                subscribeToRealtime();
-                broadcastPresence();
-                updateOnlineDisplay();
-                if (window.innerWidth <= 768) sidebar.classList.remove('open');
-            }
-
-            document.querySelectorAll('.group-item').forEach(item => {
-                item.addEventListener('click', () => switchGroup(item.dataset.group));
-            });
-
-            sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
-            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-            document.addEventListener('click', (e) => {
-                if (!sidebar.contains(e.target) && e.target !== menuToggle && sidebar.classList.contains('open')) {
-                    sidebar.classList.remove('open');
+                // ===== ONLINE SYSTEM =====
+                async function broadcastPresence() {
+                    await supabase.from('online_users').upsert({
+                        user_id: userId,
+                        username: username,
+                        avatar: user.avatar,
+                        group_name: currentGroup,
+                        last_seen: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
                 }
-            });
 
-            // ===== INIT =====
-            loadAllMessages();
-            subscribeToRealtime();
-            subscribeToPresence();
-            broadcastPresence();
-            updateOnlineDisplay();
+                async function cleanupOnlineUsers() {
+                    const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
+                    await supabase.from('online_users').delete().lt('last_seen', tenSecondsAgo);
+                }
 
-            setInterval(broadcastPresence, 5000);
-            setInterval(cleanupOnlineUsers, 15000);
+                async function updateOnlineDisplay() {
+                    const { data: users } = await supabase.from('online_users').select('*');
+                    if (!users) return;
+                    const totalOnline = users.length;
+                    if (onlineCount) onlineCount.textContent = `${totalOnline} نفر آنلاین`;
+                    document.querySelectorAll('.group-item').forEach(item => {
+                        const g = item.dataset.group;
+                        const count = users.filter(u => u.group_name === g).length;
+                        const el = item.querySelector('.group-count');
+                        if (el) el.textContent = `${count} آنلاین`;
+                    });
+                }
 
-            window.addEventListener('beforeunload', async () => {
-                await supabase.from('online_users').delete().eq('user_id', userId);
-            });
+                // ===== MESSAGES =====
+                async function loadAllMessages() {
+                    const { data: messages } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .eq('group_name', currentGroup)
+                        .order('created_at', { ascending: true })
+                        .limit(200);
 
-            document.addEventListener('visibilitychange', async () => {
-                if (document.hidden) {
-                    await supabase.from('online_users').delete().eq('user_id', userId);
-                } else {
+                    chatMessages.innerHTML = '';
+                    renderedIds.clear();
+
+                    if (!messages || messages.length === 0) {
+                        chatMessages.innerHTML = `<div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;"><div style="font-size:40px;margin-bottom:12px;">💬</div><p>هنوز پیامی نیست!</p><p style="font-size:12px;">اولین نفر باش که پیام میده</p></div>`;
+                        return;
+                    }
+
+                    messages.forEach(msg => appendMessage(msg));
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                function subscribeToRealtime() {
+                    if (channel) supabase.removeChannel(channel);
+                    channel = supabase
+                        .channel(`messages-${currentGroup}`)
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
+                            const msg = payload.new;
+                            if (!renderedIds.has(msg.id)) {
+                                appendMessage(msg);
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        })
+                        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
+                            const msg = payload.new;
+                            const bubble = document.getElementById(`bubble-${msg.id}`);
+                            if (bubble) {
+                                bubble.textContent = msg.message;
+                                const infoDiv = document.getElementById(`msg-${msg.id}`)?.querySelector('.msg-info');
+                                if (infoDiv && msg.edited) {
+                                    infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span>`;
+                                }
+                            }
+                        })
+                        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
+                            const deletedId = payload.old.id;
+                            const el = document.getElementById(`msg-${deletedId}`);
+                            if (el) {
+                                el.style.opacity = '0'; el.style.transform = 'scale(0.8)'; el.style.transition = '0.3s';
+                                setTimeout(() => { el.remove(); renderedIds.delete(deletedId); }, 300);
+                            }
+                        })
+                        .subscribe();
+                }
+
+                function subscribeToPresence() {
+                    supabase.channel('online-users').on('postgres_changes', { event: '*', schema: 'public', table: 'online_users' }, () => updateOnlineDisplay()).subscribe();
+                }
+
+                function escapeHtml(t) {
+                    const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+                }
+
+                function appendMessage(msg) {
+                    if (renderedIds.has(msg.id)) return;
+                    const isOwn = msg.username === username;
+                    const div = document.createElement('div');
+                    div.className = `message ${isOwn ? 'own' : ''}`;
+                    div.id = `msg-${msg.id}`;
+                    div.innerHTML = `<div class="msg-avatar">${msg.avatar || '👤'}</div><div class="msg-content"><div class="msg-info"><span>${msg.username}</span>${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}<span>${new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}</span></div><div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.message)}</div>${isOwn ? `<div class="msg-actions"><button class="msg-action-btn edit" data-id="${msg.id}">✏️</button><button class="msg-action-btn delete" data-id="${msg.id}">🗑</button></div>` : ''}</div>`;
+                    chatMessages.appendChild(div);
+                    renderedIds.add(msg.id);
+                    if (isOwn) {
+                        div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg));
+                        div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg));
+                    }
+                }
+
+                function editMessage(msg) {
+                    const bubble = document.getElementById(`bubble-${msg.id}`);
+                    if (!bubble) return;
+                    const old = msg.message;
+                    bubble.innerHTML = `<input class="edit-input" id="ei-${msg.id}" value="${escapeHtml(old)}" maxlength="500"><div class="edit-actions"><button id="se-${msg.id}">💾 ذخیره</button><button id="ce-${msg.id}">لغو</button></div>`;
+                    document.getElementById(`se-${msg.id}`).onclick = async () => {
+                        const nt = document.getElementById(`ei-${msg.id}`).value.trim();
+                        if (nt && nt !== old) {
+                            await supabase.from('messages').update({ message: nt, edited: true }).eq('id', msg.id);
+                        }
+                        bubble.textContent = nt || old;
+                    };
+                    document.getElementById(`ce-${msg.id}`).onclick = () => { bubble.textContent = old; };
+                    document.getElementById(`ei-${msg.id}`).focus();
+                    document.getElementById(`ei-${msg.id}`).addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById(`se-${msg.id}`).click(); });
+                }
+
+                async function deleteMessage(msg) {
+                    if (confirm('این پیام حذف بشه؟')) {
+                        await supabase.from('messages').delete().eq('id', msg.id);
+                    }
+                }
+
+                async function sendMessage() {
+                    const text = messageInput.value.trim();
+                    if (!text) return;
+                    const { error } = await supabase.from('messages').insert({
+                        user_id: userId, username, avatar: user.avatar,
+                        group_name: currentGroup, message: text, edited: false
+                    });
+                    if (!error) messageInput.value = '';
+                }
+
+                function switchGroup(group) {
+                    currentGroup = group;
+                    document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
+                    document.querySelector(`[data-group="${group}"]`)?.classList.add('active');
+                    groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
+                    chatMessages.innerHTML = '';
+                    renderedIds.clear();
+                    loadAllMessages();
+                    subscribeToRealtime();
                     broadcastPresence();
                     updateOnlineDisplay();
+                    if (window.innerWidth <= 768) sidebar.classList.remove('open');
                 }
-            });
 
-            console.log('❄️ چت با Supabase آماده! پیام‌ها بلادرنگ و اشتراکی 🏎️');
-        })();
-    </script>
+                document.querySelectorAll('.group-item').forEach(item => {
+                    item.addEventListener('click', () => switchGroup(item.dataset.group));
+                });
+
+                sendBtn.addEventListener('click', sendMessage);
+                messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+                menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+                document.addEventListener('click', (e) => {
+                    if (!sidebar.contains(e.target) && e.target !== menuToggle && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+
+                // ===== INIT =====
+                loadAllMessages();
+                subscribeToRealtime();
+                subscribeToPresence();
+                broadcastPresence();
+                updateOnlineDisplay();
+
+                setInterval(broadcastPresence, 5000);
+                setInterval(cleanupOnlineUsers, 15000);
+
+                window.addEventListener('beforeunload', async () => {
+                    await supabase.from('online_users').delete().eq('user_id', userId);
+                });
+
+                document.addEventListener('visibilitychange', async () => {
+                    if (document.hidden) {
+                        await supabase.from('online_users').delete().eq('user_id', userId);
+                    } else {
+                        broadcastPresence();
+                        updateOnlineDisplay();
+                    }
+                });
+
+                console.log('❄️ چت با Supabase آماده! پیام‌ها بلادرنگ و اشتراکی 🏎️');
+            })();
+        </script>
 </body>
+
 </html>
