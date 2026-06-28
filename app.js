@@ -129,10 +129,7 @@
                     alert('📞 شماره تماس: ۰۹۱۲-XXX-XXXX');
                     break;
                 case 'instagram':
-                    window.open('https://instagram.com/simple.warmup', '_blank');
-                    break;
-                case 'whatsapp':
-                    window.open('https://wa.me/98912XXXXXXX', '_blank');
+                    window.open('https://instagram.com/simplewarmup', '_blank');
                     break;
                 default:
                     break;
@@ -159,47 +156,218 @@
 
 
 
-/* ==================== CHAT PREVIEW ==================== */
+/* ==================== SYNCED CHAT PREVIEW WITH REAL ONLINE COUNT ==================== */
 (function initChatPreview() {
-    const input = document.getElementById('chatPreviewInput');
-    const sendBtn = document.getElementById('sendPreviewChat');
-    const messages = document.getElementById('chatMessages');
-    const joinBtn = document.getElementById('joinChatBtn');
+    const previewMessages = document.getElementById('previewMessages');
+    const previewInput = document.getElementById('previewInput');
+    const sendPreviewBtn = document.getElementById('sendPreviewBtn');
+    const onlineCount = document.getElementById('onlineCount');
 
-    if (!input || !sendBtn || !messages) return;
+    if (!previewMessages || !previewInput || !sendPreviewBtn) return;
 
-    sendBtn.addEventListener('click', () => {
-        const text = input.value.trim();
-        if (!text) return;
+    const STORAGE_KEY = 'chat_messages_general';
+    const ONLINE_KEY = 'chat_online_users';
+    const CHANNEL_NAME = 'chat_presence';
 
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'chat-msg';
-        msgDiv.innerHTML = `
-            <span class="msg-user">👤 شما:</span>
-            <span class="msg-text">${text}</span>
-            <span class="msg-time">همین الان</span>
-        `;
-        messages.appendChild(msgDiv);
-        messages.scrollTop = messages.scrollHeight;
-        input.value = '';
-    });
-
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendBtn.click();
-    });
-
-    if (joinBtn) {
-        joinBtn.addEventListener('click', () => {
-            alert('🏎️ به زودی: چت کامل با گروه‌های تخصصی!\n💬 قابلیت ارسال عکس، ویس و استیکر');
-        });
+    // User ID
+    let userId = localStorage.getItem('chat_userId');
+    if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('chat_userId', userId);
     }
 
-    setInterval(() => {
-        const count = document.getElementById('onlineCount');
-        if (count) {
-            count.textContent = `${Math.floor(Math.random() * 10) + 8} نفر آنلاین`;
+    // Broadcast Channel
+    const channel = new BroadcastChannel(CHANNEL_NAME);
+
+    // ===== ONLINE USERS =====
+    function getOnlineUsers() {
+        const data = localStorage.getItem(ONLINE_KEY);
+        return data ? JSON.parse(data) : {};
+    }
+
+    function broadcastPresence() {
+        const name = localStorage.getItem('chat_username') || 'ناشناس';
+        const presence = {
+            userId: userId,
+            username: name,
+            group: 'general',
+            avatar: getAvatar(name),
+            timestamp: Date.now()
+        };
+        
+        let users = getOnlineUsers();
+        users[userId] = presence;
+        localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+        channel.postMessage({ type: 'presence', data: presence });
+        updateOnlineDisplay();
+    }
+
+    function cleanupOnlineUsers() {
+        let users = getOnlineUsers();
+        const now = Date.now();
+        let changed = false;
+
+        Object.keys(users).forEach(id => {
+            if (now - users[id].timestamp > 10000) {
+                delete users[id];
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            updateOnlineDisplay();
         }
-    }, 10000);
+    }
+
+    function updateOnlineDisplay() {
+        const users = getOnlineUsers();
+        const totalOnline = Object.keys(users).length;
+        if (onlineCount) {
+            onlineCount.textContent = `${totalOnline} نفر آنلاین`;
+        }
+    }
+
+    channel.onmessage = (event) => {
+        if (event.data.type === 'presence') {
+            let users = getOnlineUsers();
+            users[event.data.data.userId] = event.data.data;
+            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            updateOnlineDisplay();
+        }
+        if (event.data.type === 'leave') {
+            let users = getOnlineUsers();
+            delete users[event.data.userId];
+            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            updateOnlineDisplay();
+        }
+    };
+
+    // ===== MESSAGES =====
+    function getUsername() {
+        return localStorage.getItem('chat_username') || 'ناشناس';
+    }
+
+    function getMessages() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    }
+
+    function saveMessages(messages) {
+        const trimmed = messages.slice(-200);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+    }
+
+    function renderMessages() {
+        const messages = getMessages();
+        const username = getUsername();
+
+        if (messages.length === 0) {
+            previewMessages.innerHTML = `
+                <div style="text-align:center;color:rgba(179,236,255,0.3);padding:20px;">
+                    <p>هنوز پیامی نیست!</p>
+                    <p style="font-size:11px;">اولین نفر باش که پیام میده 💬</p>
+                </div>
+            `;
+            return;
+        }
+
+        const lastMessages = messages.slice(-5);
+
+        previewMessages.innerHTML = lastMessages.map(msg => {
+            const isOwn = msg.username === username;
+            return `
+                <div class="chat-msg" style="${isOwn ? 'background:rgba(93,213,248,0.08);padding:6px 10px;border-radius:10px;' : ''}">
+                    <span class="msg-user">${msg.avatar || '👤'} ${msg.username}${msg.edited ? ' <small>(ویرایش)</small>' : ''}:</span>
+                    <span class="msg-text">${escapeHtml(msg.text)}</span>
+                    <span class="msg-time">${msg.time}</span>
+                </div>
+            `;
+        }).join('');
+
+        previewMessages.scrollTop = previewMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function getAvatar(name) {
+        const avatars = ['🚗', '🏎️', '🚙', '🔥', '💨', '⚡', '🔧', '🎵'];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return avatars[Math.abs(hash) % avatars.length];
+    }
+
+    // ===== SEND MESSAGE =====
+    function sendMessage() {
+        const text = previewInput.value.trim();
+        const username = getUsername();
+
+        if (!text) return;
+
+        const message = {
+            id: Date.now(),
+            username: username,
+            avatar: getAvatar(username),
+            text: text,
+            time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+            group: 'general',
+            edited: false
+        };
+
+        const messages = getMessages();
+        messages.push(message);
+        saveMessages(messages);
+
+        previewInput.value = '';
+        renderMessages();
+    }
+
+    // ===== EVENT LISTENERS =====
+    sendPreviewBtn.addEventListener('click', sendMessage);
+
+    previewInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // ===== INIT =====
+    broadcastPresence();
+    renderMessages();
+    updateOnlineDisplay();
+
+    // Refresh messages
+    setInterval(renderMessages, 2000);
+    
+    // Broadcast presence
+    setInterval(broadcastPresence, 5000);
+    
+    // Cleanup
+    setInterval(cleanupOnlineUsers, 15000);
+
+    // Leave on unload
+    window.addEventListener('beforeunload', () => {
+        channel.postMessage({ type: 'leave', userId: userId });
+        let users = getOnlineUsers();
+        delete users[userId];
+        localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+    });
+
+    // Visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            channel.postMessage({ type: 'leave', userId: userId });
+        } else {
+            broadcastPresence();
+            renderMessages();
+        }
+    });
+
+    console.log('💬 چت پریمویو با تعداد آنلاین واقعی آماده‌ست!');
 })();
 
 /* ==================== SHOP BUTTONS ==================== */

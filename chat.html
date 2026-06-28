@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>چت ماشین‌بازها | Simple Warmup</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         /* ================= CHAT PAGE STYLES ================= */
@@ -25,7 +27,7 @@
 
         /* Sidebar */
         .chat-sidebar {
-            width: 280px;
+            width: 260px;
             background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(93, 213, 248, 0.04));
             border-left: 1px solid rgba(125, 211, 252, 0.15);
             backdrop-filter: blur(30px);
@@ -67,7 +69,6 @@
             color: #fff;
         }
 
-        /* User Card */
         .user-card-mini {
             display: flex;
             align-items: center;
@@ -88,6 +89,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            flex-shrink: 0;
         }
 
         .user-name-input {
@@ -104,7 +106,6 @@
             color: rgba(179, 236, 255, 0.3);
         }
 
-        /* Groups */
         .sidebar-section {
             margin-bottom: 20px;
         }
@@ -114,7 +115,6 @@
             font-size: 11px;
             letter-spacing: 1px;
             margin-bottom: 10px;
-            text-transform: uppercase;
         }
 
         .group-item {
@@ -192,8 +192,15 @@
         }
 
         @keyframes onlinePulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         /* Messages */
@@ -203,7 +210,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .message {
@@ -211,6 +218,8 @@
             gap: 8px;
             max-width: 70%;
             animation: msgIn 0.3s ease;
+            position: relative;
+            group: message-group;
         }
 
         .message.own {
@@ -219,8 +228,15 @@
         }
 
         @keyframes msgIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .msg-avatar {
@@ -235,11 +251,17 @@
             flex-shrink: 0;
         }
 
+        .msg-content {
+            position: relative;
+        }
+
         .msg-bubble {
             padding: 10px 14px;
             border-radius: 16px;
             font-size: 13px;
             line-height: 1.8;
+            position: relative;
+            cursor: default;
         }
 
         .message:not(.own) .msg-bubble {
@@ -266,6 +288,59 @@
 
         .message.own .msg-info {
             justify-content: flex-end;
+        }
+
+        /* Edit/Delete buttons */
+        .msg-actions {
+            display: none;
+            position: absolute;
+            top: -10px;
+            gap: 4px;
+            z-index: 5;
+        }
+
+        .message.own .msg-actions {
+            left: 0;
+        }
+
+        .message:not(.own) .msg-actions {
+            right: 0;
+        }
+
+        .message:hover .msg-actions {
+            display: flex;
+        }
+
+        .msg-action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            background: rgba(4, 26, 46, 0.8);
+            color: var(--ice3);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .msg-action-btn:hover {
+            background: rgba(14, 165, 233, 0.3);
+            border-color: var(--ice3);
+        }
+
+        .msg-action-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .edited-badge {
+            font-size: 9px;
+            color: rgba(179, 236, 255, 0.3);
+            margin-right: 4px;
         }
 
         /* Input */
@@ -315,6 +390,40 @@
             box-shadow: 0 0 25px rgba(93, 213, 248, 0.4);
         }
 
+        /* Edit mode */
+        .edit-input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(93, 213, 248, 0.4);
+            background: rgba(14, 165, 233, 0.2);
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Vazirmatn', sans-serif;
+            outline: none;
+            margin-bottom: 4px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .edit-actions button {
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            background: rgba(14, 165, 233, 0.2);
+            color: var(--ice2);
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .edit-actions button:hover {
+            background: rgba(14, 165, 233, 0.4);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .chat-sidebar {
@@ -350,9 +459,9 @@
         }
     </style>
 </head>
+
 <body class="chat-page-body">
 
-    <!-- MIST -->
     <div class="mist-layer">
         <div class="mist mist-1"></div>
         <div class="mist mist-2"></div>
@@ -360,8 +469,7 @@
     </div>
 
     <div class="chat-container">
-        
-        <!-- SIDEBAR -->
+
         <aside class="chat-sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h3>🏎️ چت ماشین‌بازها</h3>
@@ -370,13 +478,8 @@
 
             <div class="user-card-mini">
                 <div class="user-avatar-mini">👤</div>
-                <input 
-                    type="text" 
-                    class="user-name-input" 
-                    id="usernameInput" 
-                    placeholder="اسم خودت رو بنویس..."
-                    maxlength="20"
-                >
+                <input type="text" class="user-name-input" id="usernameInput" placeholder="اسم خودت رو بنویس..."
+                    maxlength="20">
             </div>
 
             <div class="sidebar-section">
@@ -395,24 +498,9 @@
                         <span class="group-count">۸ آنلاین</span>
                     </div>
                 </div>
-                <div class="group-item" data-group="turbo">
-                    <span class="group-icon">💨</span>
-                    <div>
-                        <span class="group-name">توربو چت</span>
-                        <span class="group-count">۵ آنلاین</span>
-                    </div>
-                </div>
-                <div class="group-item" data-group="sound">
-                    <span class="group-icon">🎵</span>
-                    <div>
-                        <span class="group-name">صدای اگزوز</span>
-                        <span class="group-count">۳ آنلاین</span>
-                    </div>
-                </div>
             </div>
         </aside>
 
-        <!-- MAIN CHAT -->
         <main class="chat-main">
             <div class="chat-header">
                 <button class="mobile-toggle" id="menuToggle">☰</button>
@@ -423,18 +511,10 @@
                 <span class="online-dot"></span>
             </div>
 
-            <div class="chat-messages" id="chatMessages">
-                <!-- Messages load here -->
-            </div>
+            <div class="chat-messages" id="chatMessages"></div>
 
             <div class="chat-input-area">
-                <input 
-                    type="text" 
-                    id="messageInput" 
-                    placeholder="پیامت رو بنویس..."
-                    autocomplete="off"
-                    maxlength="500"
-                >
+                <input type="text" id="messageInput" placeholder="پیامت رو بنویس..." autocomplete="off" maxlength="500">
                 <button class="send-btn" id="sendBtn">📨</button>
             </div>
         </main>
@@ -442,9 +522,7 @@
     </div>
 
     <script>
-        /* ==================== CHAT APP ==================== */
-        (function() {
-            // ===== DOM Elements =====
+        (function () {
             const chatMessages = document.getElementById('chatMessages');
             const messageInput = document.getElementById('messageInput');
             const sendBtn = document.getElementById('sendBtn');
@@ -454,22 +532,119 @@
             const sidebar = document.getElementById('sidebar');
             const onlineCount = document.getElementById('onlineCount');
 
-            // ===== State =====
             let currentGroup = 'general';
             let username = localStorage.getItem('chat_username') || '';
+            let lastMessageId = 0;
+            let userId = localStorage.getItem('chat_userId');
 
-            // Load username
-            if (username) {
-                usernameInput.value = username;
+            // ===== USER ID =====
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('chat_userId', userId);
             }
 
-            // Save username on change
+            if (username) usernameInput.value = username;
+
             usernameInput.addEventListener('input', () => {
                 username = usernameInput.value.trim();
                 localStorage.setItem('chat_username', username);
+                // اعلام آنلاین بودن با اسم جدید
+                broadcastPresence();
             });
 
-            // ===== Load Messages =====
+            // ===== ONLINE USERS SYSTEM =====
+            const ONLINE_KEY = 'chat_online_users';
+            const CHANNEL_NAME = 'chat_presence';
+
+            // کانال Broadcast برای ارتباط بین تب‌ها
+            const channel = new BroadcastChannel(CHANNEL_NAME);
+
+            // هر ۵ ثانیه اعلام حضور
+            function broadcastPresence() {
+                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                const presence = {
+                    userId: userId,
+                    username: name,
+                    group: currentGroup,
+                    avatar: getAvatar(name),
+                    timestamp: Date.now()
+                };
+
+                // ذخیره در localStorage
+                let users = getOnlineUsers();
+                users[userId] = presence;
+                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+
+                // اعلام به تب‌های دیگر
+                channel.postMessage({ type: 'presence', data: presence });
+            }
+
+            function getOnlineUsers() {
+                const data = localStorage.getItem(ONLINE_KEY);
+                return data ? JSON.parse(data) : {};
+            }
+
+            function cleanupOnlineUsers() {
+                let users = getOnlineUsers();
+                const now = Date.now();
+                let changed = false;
+
+                // حذف کاربرانی که بیشتر از ۱۰ ثانیه غیرفعال بودن
+                Object.keys(users).forEach(id => {
+                    if (now - users[id].timestamp > 10000) {
+                        delete users[id];
+                        changed = true;
+                    }
+                });
+
+                if (changed) {
+                    localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                    updateOnlineCount();
+                }
+            }
+
+            function updateOnlineCount() {
+                const users = getOnlineUsers();
+
+                // تعداد کل آنلاین‌ها
+                const totalOnline = Object.keys(users).length;
+
+                // تعداد آنلاین در گروه فعلی
+                const groupOnline = Object.values(users).filter(u => u.group === currentGroup).length;
+
+                if (onlineCount) {
+                    onlineCount.textContent = `${totalOnline} نفر آنلاین`;
+                }
+
+                // آپدیت تعداد گروه‌ها
+                document.querySelectorAll('.group-item').forEach(item => {
+                    const group = item.dataset.group;
+                    const countEl = item.querySelector('.group-count');
+                    if (countEl) {
+                        const groupUsers = Object.values(users).filter(u => u.group === group).length;
+                        countEl.textContent = `${groupUsers} آنلاین`;
+                    }
+                });
+            }
+
+            // گوش دادن به پیام‌های کانال
+            channel.onmessage = (event) => {
+                if (event.data.type === 'presence') {
+                    let users = getOnlineUsers();
+                    users[event.data.data.userId] = event.data.data;
+                    localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                    updateOnlineCount();
+                }
+
+                if (event.data.type === 'leave') {
+                    let users = getOnlineUsers();
+                    delete users[event.data.userId];
+                    localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                    updateOnlineCount();
+                }
+            };
+
+            // ===== MESSAGE FUNCTIONS =====
             function getMessages() {
                 const key = `chat_messages_${currentGroup}`;
                 const data = localStorage.getItem(key);
@@ -478,78 +653,14 @@
 
             function saveMessages(messages) {
                 const key = `chat_messages_${currentGroup}`;
-                // Keep only last 200 messages
                 const trimmed = messages.slice(-200);
                 localStorage.setItem(key, JSON.stringify(trimmed));
-            }
-
-            // ===== Render Messages =====
-            function renderMessages() {
-                const messages = getMessages();
-                const savedUsername = localStorage.getItem('chat_username') || 'ناشناس';
-                
-                chatMessages.innerHTML = '';
-                
-                if (messages.length === 0) {
-                    chatMessages.innerHTML = `
-                        <div style="text-align:center; color:rgba(179,236,255,0.3); padding:40px;">
-                            <div style="font-size:40px; margin-bottom:12px;">💬</div>
-                            <p>هنوز پیامی نیست!</p>
-                            <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                messages.forEach(msg => {
-                    const isOwn = msg.username === savedUsername;
-                    const div = document.createElement('div');
-                    div.className = `message ${isOwn ? 'own' : ''}`;
-                    div.innerHTML = `
-                        <div class="msg-avatar">${msg.avatar || '👤'}</div>
-                        <div>
-                            <div class="msg-info">
-                                <span>${msg.username}</span>
-                                <span>${msg.time}</span>
-                            </div>
-                            <div class="msg-bubble">${escapeHtml(msg.text)}</div>
-                        </div>
-                    `;
-                    chatMessages.appendChild(div);
-                });
-
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
             function escapeHtml(text) {
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
-            }
-
-            // ===== Send Message =====
-            function sendMessage() {
-                const text = messageInput.value.trim();
-                const name = localStorage.getItem('chat_username') || 'ناشناس';
-                
-                if (!text) return;
-
-                const message = {
-                    id: Date.now(),
-                    username: name,
-                    avatar: getAvatar(name),
-                    text: text,
-                    time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
-                    group: currentGroup
-                };
-
-                const messages = getMessages();
-                messages.push(message);
-                saveMessages(messages);
-
-                messageInput.value = '';
-                renderMessages();
             }
 
             function getAvatar(name) {
@@ -561,62 +672,208 @@
                 return avatars[Math.abs(hash) % avatars.length];
             }
 
-            // ===== Group Switch =====
+            function renderMessages() {
+                const messages = getMessages();
+                const savedUsername = localStorage.getItem('chat_username') || 'ناشناس';
+
+                if (messages.length === 0) {
+                    chatMessages.innerHTML = `
+                    <div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;">
+                        <div style="font-size:40px;margin-bottom:12px;">💬</div>
+                        <p>هنوز پیامی نیست!</p>
+                        <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
+                    </div>
+                `;
+                    lastMessageId = 0;
+                    return;
+                }
+
+                const newMessages = messages.filter(msg => msg.id > lastMessageId);
+
+                if (newMessages.length > 0) {
+                    newMessages.forEach(msg => {
+                        if (document.getElementById(`msg-${msg.id}`)) return;
+
+                        const isOwn = msg.username === savedUsername;
+                        const div = document.createElement('div');
+                        div.className = `message ${isOwn ? 'own' : ''}`;
+                        div.id = `msg-${msg.id}`;
+                        div.innerHTML = `
+                        <div class="msg-avatar">${msg.avatar || '👤'}</div>
+                        <div class="msg-content">
+                            <div class="msg-info">
+                                <span>${msg.username}</span>
+                                ${msg.edited ? '<span class="edited-badge">(ویرایش شده)</span>' : ''}
+                                <span>${msg.time}</span>
+                            </div>
+                            <div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.text)}</div>
+                            ${isOwn ? `
+                            <div class="msg-actions">
+                                <button class="msg-action-btn edit" data-id="${msg.id}" title="ویرایش">✏️</button>
+                                <button class="msg-action-btn delete" data-id="${msg.id}" title="حذف">🗑</button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                        chatMessages.appendChild(div);
+
+                        if (isOwn) {
+                            div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg.id));
+                            div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg.id));
+                        }
+                    });
+
+                    lastMessageId = messages[messages.length - 1].id;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+
+            function editMessage(msgId) {
+                const messages = getMessages();
+                const msg = messages.find(m => m.id === msgId);
+                if (!msg) return;
+
+                const bubble = document.getElementById(`bubble-${msgId}`);
+                if (!bubble) return;
+
+                const currentText = msg.text;
+
+                bubble.innerHTML = `
+                <input type="text" class="edit-input" value="${escapeHtml(currentText)}" id="editInput-${msgId}" maxlength="500">
+                <div class="edit-actions">
+                    <button id="saveEdit-${msgId}">💾 ذخیره</button>
+                    <button id="cancelEdit-${msgId}">لغو</button>
+                </div>
+            `;
+
+                document.getElementById(`saveEdit-${msgId}`).addEventListener('click', () => {
+                    const newText = document.getElementById(`editInput-${msgId}`).value.trim();
+                    if (newText && newText !== currentText) {
+                        msg.text = newText;
+                        msg.edited = true;
+                        msg.time = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }) + ' (ویرایش)';
+                        saveMessages(messages);
+                        const msgDiv = document.getElementById(`msg-${msgId}`);
+                        if (msgDiv) {
+                            msgDiv.querySelector('.msg-bubble').textContent = newText;
+                            msgDiv.querySelector('.msg-info').innerHTML = `
+                            <span>${msg.username}</span>
+                            <span class="edited-badge">(ویرایش شده)</span>
+                            <span>${msg.time}</span>
+                        `;
+                        }
+                    } else {
+                        bubble.textContent = currentText;
+                    }
+                });
+
+                document.getElementById(`cancelEdit-${msgId}`).addEventListener('click', () => {
+                    bubble.textContent = currentText;
+                });
+
+                document.getElementById(`editInput-${msgId}`).focus();
+                document.getElementById(`editInput-${msgId}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') document.getElementById(`saveEdit-${msgId}`).click();
+                });
+            }
+
+            function deleteMessage(msgId) {
+                if (confirm('این پیام حذف بشه؟')) {
+                    const messages = getMessages().filter(m => m.id !== msgId);
+                    saveMessages(messages);
+                    const msgDiv = document.getElementById(`msg-${msgId}`);
+                    if (msgDiv) {
+                        msgDiv.style.opacity = '0';
+                        msgDiv.style.transform = 'scale(0.8)';
+                        msgDiv.style.transition = '0.3s';
+                        setTimeout(() => msgDiv.remove(), 300);
+                    }
+                }
+            }
+
+            function sendMessage() {
+                const text = messageInput.value.trim();
+                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                if (!text) return;
+
+                const message = {
+                    id: Date.now(),
+                    username: name,
+                    avatar: getAvatar(name),
+                    text: text,
+                    time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+                    group: currentGroup,
+                    edited: false
+                };
+
+                const messages = getMessages();
+                messages.push(message);
+                saveMessages(messages);
+
+                messageInput.value = '';
+                lastMessageId = 0;
+                renderMessages();
+            }
+
+            // ===== GROUP SWITCH =====
             document.querySelectorAll('.group-item').forEach(item => {
                 item.addEventListener('click', () => {
                     document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
                     currentGroup = item.dataset.group;
                     groupTitle.textContent = item.querySelector('.group-name').textContent;
+                    chatMessages.innerHTML = '';
+                    lastMessageId = 0;
                     renderMessages();
-                    
-                    // Close sidebar on mobile
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('open');
-                    }
+
+                    // آپدیت گروه کاربر
+                    broadcastPresence();
+
+                    if (window.innerWidth <= 768) sidebar.classList.remove('open');
                 });
             });
 
-            // ===== Event Listeners =====
+            // ===== EVENT LISTENERS =====
             sendBtn.addEventListener('click', sendMessage);
-            
             messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
+                if (e.key === 'Enter') sendMessage();
             });
+            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
-            // Mobile menu toggle
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-
-            // Update online count randomly
-            function updateOnlineCount() {
-                const counts = {
-                    general: Math.floor(Math.random() * 10) + 8,
-                    tuning: Math.floor(Math.random() * 8) + 5,
-                    turbo: Math.floor(Math.random() * 6) + 3,
-                    sound: Math.floor(Math.random() * 4) + 2
-                };
-                onlineCount.textContent = `${counts[currentGroup]} نفر آنلاین`;
-                
-                document.querySelectorAll('.group-count').forEach(count => {
-                    const group = count.closest('.group-item').dataset.group;
-                    count.textContent = `${counts[group]} آنلاین`;
-                });
-            }
-
-            // ===== Auto Refresh =====
-            setInterval(renderMessages, 3000); // Refresh every 3 seconds
-            setInterval(updateOnlineCount, 10000); // Update online count
-
-            // ===== Init =====
+            // ===== INIT =====
+            broadcastPresence();
             renderMessages();
             updateOnlineCount();
 
-            console.log('🏎️ چت ماشین‌بازها آماده‌ست!');
+            // هر ۵ ثانیه حضور رو اعلام کن
+            setInterval(broadcastPresence, 5000);
+
+            // هر ۳ ثانیه پیام‌های جدید رو چک کن
+            setInterval(renderMessages, 3000);
+
+            // هر ۱۵ ثانیه کاربرای غیرفعال رو پاک کن
+            setInterval(cleanupOnlineUsers, 15000);
+
+            // وقتی کاربر از صفحه خارج میشه
+            window.addEventListener('beforeunload', () => {
+                channel.postMessage({ type: 'leave', userId: userId });
+                let users = getOnlineUsers();
+                delete users[userId];
+                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            });
+
+            // وقتی صفحه hidden میشه (موبایل)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    channel.postMessage({ type: 'leave', userId: userId });
+                } else {
+                    broadcastPresence();
+                }
+            });
+
+            console.log('🏎️ چت ماشین‌بازها با تعداد آنلاین واقعی آماده‌ست!');
         })();
     </script>
 </body>
+
 </html>
