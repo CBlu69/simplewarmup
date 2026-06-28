@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -492,6 +493,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="chat-page-body">
@@ -557,6 +559,14 @@
 
     <script>
         (function () {
+            // ===== SUPABASE CONFIG =====
+            // اینا رو با اطلاعات پروژه خودت جایگزین کن
+            const SUPABASE_URL = 'https://kmgtrqwcuuqdgrgmkvkf.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ3RycXdjdXVxZGdyZ21rdmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTY2MjIsImV4cCI6MjA5ODIzMjYyMn0.i22KZmspL89WZreO05p0PU4lP3UnYLfGPSZ-tOWo_b4'; // anon key کامل اینجا
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // ===== DOM ELEMENTS =====
             const chatMessages = document.getElementById('chatMessages');
             const messageInput = document.getElementById('messageInput');
             const sendBtn = document.getElementById('sendBtn');
@@ -569,8 +579,10 @@
             let currentGroup = 'general';
             let username = localStorage.getItem('chat_username') || '';
             let userId = localStorage.getItem('chat_userId');
-            let renderedIds = new Set(); // ست کردن IDهای رندر شده
+            const renderedIds = new Set();
+            let channel = null; // برای Realtime
 
+            // ساختن userId اگر وجود نداره
             if (!userId) {
                 userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('chat_userId', userId);
@@ -585,61 +597,156 @@
             });
 
             // ===== ONLINE SYSTEM =====
-            const ONLINE_KEY = 'sw_chat_online';
-
-            function getOnlineUsers() {
-                try { return JSON.parse(localStorage.getItem(ONLINE_KEY)) || {}; }
-                catch (e) { return {}; }
-            }
-
-            function broadcastPresence() {
-                const name = localStorage.getItem('chat_username') || 'ناشناس';
+            async function broadcastPresence() {
+                const name = username || localStorage.getItem('chat_username') || 'ناشناس';
                 const presence = {
-                    userId, username: name, group: currentGroup,
-                    avatar: getAvatar(name), timestamp: Date.now()
+                    user_id: userId,
+                    username: name,
+                    avatar: getAvatar(name),
+                    group_name: currentGroup,
+                    last_seen: new Date().toISOString()
                 };
-                let users = getOnlineUsers();
-                users[userId] = presence;
-                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-                updateOnlineDisplay();
+
+                // Upsert در Supabase (درج یا آپدیت)
+                await supabase
+                    .from('online_users')
+                    .upsert(presence, { onConflict: 'user_id' });
             }
 
-            function cleanupOnlineUsers() {
-                let users = getOnlineUsers();
-                const now = Date.now();
-                let changed = false;
-                Object.keys(users).forEach(id => {
-                    if (now - users[id].timestamp > 8000) { delete users[id]; changed = true; }
-                });
-                if (changed) { localStorage.setItem(ONLINE_KEY, JSON.stringify(users)); updateOnlineDisplay(); }
+            async function cleanupOnlineUsers() {
+                const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
+                await supabase
+                    .from('online_users')
+                    .delete()
+                    .lt('last_seen', tenSecondsAgo);
             }
 
-            function updateOnlineDisplay() {
-                const users = getOnlineUsers();
-                const total = Object.keys(users).length;
-                if (onlineCount) onlineCount.textContent = `${total} نفر آنلاین`;
+            async function updateOnlineDisplay() {
+                const { data: users } = await supabase
+                    .from('online_users')
+                    .select('*');
+
+                if (!users) return;
+
+                const totalOnline = users.length;
+                if (onlineCount) onlineCount.textContent = `${totalOnline} نفر آنلاین`;
+
                 document.querySelectorAll('.group-item').forEach(item => {
                     const g = item.dataset.group;
-                    const count = Object.values(users).filter(u => u.group === g).length;
+                    const count = users.filter(u => u.group_name === g).length;
                     const el = item.querySelector('.group-count');
                     if (el) el.textContent = `${count} آنلاین`;
                 });
             }
 
             // ===== MESSAGES =====
-            function getStorageKey() {
-                return `sw_msg_${currentGroup}`;
+            async function loadAllMessages() {
+                const { data: messages } = await supabase
+                    .from('messages')
+                    .select('*')
+                    .eq('group_name', currentGroup)
+                    .order('created_at', { ascending: true })
+                    .limit(200);
+
+                chatMessages.innerHTML = '';
+                renderedIds.clear();
+
+                if (!messages || messages.length === 0) {
+                    chatMessages.innerHTML = `
+                <div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;">
+                    <div style="font-size:40px;margin-bottom:12px;">💬</div>
+                    <p>هنوز پیامی نیست!</p>
+                    <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
+                </div>`;
+                    return;
+                }
+
+                const myName = username || localStorage.getItem('chat_username') || 'ناشناس';
+                messages.forEach(msg => appendMessage(msg, myName));
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            function getMessages() {
-                try { return JSON.parse(localStorage.getItem(getStorageKey())) || []; }
-                catch (e) { return []; }
+            // ===== REALTIME SUBSCRIPTION =====
+            function subscribeToRealtime() {
+                // قطع کانال قبلی
+                if (channel) supabase.removeChannel(channel);
+
+                // کانال جدید
+                channel = supabase
+                    .channel(`messages-${currentGroup}`)
+                    .on('postgres_changes',
+                        {
+                            event: 'INSERT',
+                            schema: 'public',
+                            table: 'messages',
+                            filter: `group_name=eq.${currentGroup}`
+                        },
+                        (payload) => {
+                            const msg = payload.new;
+                            if (!renderedIds.has(msg.id)) {
+                                const myName = username || localStorage.getItem('chat_username') || 'ناشناس';
+                                appendMessage(msg, myName);
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        }
+                    )
+                    .on('postgres_changes',
+                        {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'messages',
+                            filter: `group_name=eq.${currentGroup}`
+                        },
+                        (payload) => {
+                            const msg = payload.new;
+                            // آپدیت پیام موجود
+                            const bubble = document.getElementById(`bubble-${msg.id}`);
+                            if (bubble) {
+                                bubble.textContent = msg.message;
+                                const infoDiv = document.getElementById(`msg-${msg.id}`)?.querySelector('.msg-info');
+                                if (infoDiv && msg.edited) {
+                                    infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span>`;
+                                }
+                            }
+                        }
+                    )
+                    .on('postgres_changes',
+                        {
+                            event: 'DELETE',
+                            schema: 'public',
+                            table: 'messages',
+                            filter: `group_name=eq.${currentGroup}`
+                        },
+                        (payload) => {
+                            const deletedId = payload.old.id;
+                            const el = document.getElementById(`msg-${deletedId}`);
+                            if (el) {
+                                el.style.opacity = '0';
+                                el.style.transform = 'scale(0.8)';
+                                el.style.transition = '0.3s';
+                                setTimeout(() => {
+                                    el.remove();
+                                    renderedIds.delete(deletedId);
+                                }, 300);
+                            }
+                        }
+                    )
+                    .subscribe();
             }
 
-            function saveMessages(msgs) {
-                localStorage.setItem(getStorageKey(), JSON.stringify(msgs.slice(-200)));
+            // گوش دادن به آنلاین شدن کاربرا
+            function subscribeToPresence() {
+                supabase
+                    .channel('online-users')
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table: 'online_users' },
+                        () => updateOnlineDisplay()
+                    )
+                    .subscribe();
             }
 
+            // ===== HELPERS =====
             function escapeHtml(t) {
                 const d = document.createElement('div');
                 d.textContent = t;
@@ -653,49 +760,6 @@
                 return av[Math.abs(h) % av.length];
             }
 
-            // رندر کامل (برای بار اول یا تغییر گروه)
-            function renderAllMessages() {
-                const msgs = getMessages();
-                const myName = localStorage.getItem('chat_username') || 'ناشناس';
-
-                chatMessages.innerHTML = '';
-                renderedIds.clear();
-
-                if (!msgs.length) {
-                    chatMessages.innerHTML = `
-                    <div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;">
-                        <div style="font-size:40px;margin-bottom:12px;">💬</div>
-                        <p>هنوز پیامی نیست!</p>
-                        <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
-                    </div>`;
-                    return;
-                }
-
-                msgs.forEach(msg => {
-                    appendMessage(msg, myName);
-                });
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-
-            // فقط پیام‌های جدید
-            function renderNewMessages() {
-                const msgs = getMessages();
-                const myName = localStorage.getItem('chat_username') || 'ناشناس';
-                let hasNew = false;
-
-                msgs.forEach(msg => {
-                    if (!renderedIds.has(msg.id)) {
-                        appendMessage(msg, myName);
-                        hasNew = true;
-                    }
-                });
-
-                if (hasNew) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            }
-
             function appendMessage(msg, myName) {
                 if (renderedIds.has(msg.id)) return;
 
@@ -704,104 +768,94 @@
                 div.className = `message ${isOwn ? 'own' : ''}`;
                 div.id = `msg-${msg.id}`;
                 div.innerHTML = `
-                <div class="msg-avatar">${msg.avatar || '👤'}</div>
-                <div class="msg-content">
-                    <div class="msg-info">
-                        <span>${msg.username}</span>
-                        ${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}
-                        <span>${msg.time}</span>
-                    </div>
-                    <div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.text)}</div>
-                    ${isOwn ? `
-                    <div class="msg-actions">
-                        <button class="msg-action-btn edit" data-id="${msg.id}">✏️</button>
-                        <button class="msg-action-btn delete" data-id="${msg.id}">🗑</button>
-                    </div>` : ''}
-                </div>`;
+            <div class="msg-avatar">${msg.avatar || '👤'}</div>
+            <div class="msg-content">
+                <div class="msg-info">
+                    <span>${msg.username}</span>
+                    ${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}
+                    <span>${new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.message)}</div>
+                ${isOwn ? `
+                <div class="msg-actions">
+                    <button class="msg-action-btn edit" data-id="${msg.id}">✏️</button>
+                    <button class="msg-action-btn delete" data-id="${msg.id}">🗑</button>
+                </div>` : ''}
+            </div>`;
                 chatMessages.appendChild(div);
                 renderedIds.add(msg.id);
 
                 if (isOwn) {
-                    div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg.id));
-                    div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg.id));
+                    div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg));
+                    div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg));
                 }
             }
 
-            function editMessage(msgId) {
-                const msgs = getMessages();
-                const msg = msgs.find(m => m.id === msgId);
-                if (!msg) return;
-                const bubble = document.getElementById(`bubble-${msgId}`);
+            // ===== EDIT MESSAGE =====
+            function editMessage(msg) {
+                const bubble = document.getElementById(`bubble-${msg.id}`);
                 if (!bubble) return;
-                const old = msg.text;
+                const old = msg.message;
                 bubble.innerHTML = `
-                <input class="edit-input" id="ei-${msgId}" value="${escapeHtml(old)}" maxlength="500">
-                <div class="edit-actions">
-                    <button id="se-${msgId}">💾 ذخیره</button>
-                    <button id="ce-${msgId}">لغو</button>
-                </div>`;
-                document.getElementById(`se-${msgId}`).onclick = () => {
-                    const nt = document.getElementById(`ei-${msgId}`).value.trim();
+            <input class="edit-input" id="ei-${msg.id}" value="${escapeHtml(old)}" maxlength="500">
+            <div class="edit-actions">
+                <button id="se-${msg.id}">💾 ذخیره</button>
+                <button id="ce-${msg.id}">لغو</button>
+            </div>`;
+
+                document.getElementById(`se-${msg.id}`).onclick = async () => {
+                    const nt = document.getElementById(`ei-${msg.id}`).value.trim();
                     if (nt && nt !== old) {
-                        msg.text = nt;
-                        msg.edited = true;
-                        msg.time = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }) + ' (ویرایش)';
-                        saveMessages(msgs);
+                        await supabase
+                            .from('messages')
+                            .update({ message: nt, edited: true })
+                            .eq('id', msg.id);
                     }
                     bubble.textContent = nt || old;
-                    // آپدیت info
-                    const infoDiv = document.getElementById(`msg-${msgId}`)?.querySelector('.msg-info');
-                    if (infoDiv && msg.edited) {
-                        infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span><span>${msg.time}</span>`;
-                    }
                 };
-                document.getElementById(`ce-${msgId}`).onclick = () => { bubble.textContent = old; };
-                document.getElementById(`ei-${msgId}`).focus();
-                document.getElementById(`ei-${msgId}`).addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') document.getElementById(`se-${msgId}`).click();
+
+                document.getElementById(`ce-${msg.id}`).onclick = () => {
+                    bubble.textContent = old;
+                };
+
+                document.getElementById(`ei-${msg.id}`).focus();
+                document.getElementById(`ei-${msg.id}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') document.getElementById(`se-${msg.id}`).click();
                 });
             }
 
-            function deleteMessage(msgId) {
+            // ===== DELETE MESSAGE =====
+            async function deleteMessage(msg) {
                 if (confirm('این پیام حذف بشه؟')) {
-                    saveMessages(getMessages().filter(m => m.id !== msgId));
-                    const el = document.getElementById(`msg-${msgId}`);
-                    if (el) {
-                        el.style.opacity = '0';
-                        el.style.transform = 'scale(0.8)';
-                        el.style.transition = '0.3s';
-                        setTimeout(() => {
-                            el.remove();
-                            renderedIds.delete(msgId);
-                        }, 300);
-                    }
+                    await supabase
+                        .from('messages')
+                        .delete()
+                        .eq('id', msg.id);
                 }
             }
 
-            function sendMessage() {
+            // ===== SEND MESSAGE =====
+            async function sendMessage() {
                 const text = messageInput.value.trim();
-                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                const name = username || localStorage.getItem('chat_username') || 'ناشناس';
                 if (!text) return;
 
-                const msg = {
-                    id: Date.now(),
-                    username: name,
-                    avatar: getAvatar(name),
-                    text,
-                    time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
-                    group: currentGroup,
-                    edited: false
-                };
+                const { error } = await supabase
+                    .from('messages')
+                    .insert({
+                        user_id: userId,
+                        username: name,
+                        avatar: getAvatar(name),
+                        group_name: currentGroup,
+                        message: text,
+                        edited: false
+                    });
 
-                const msgs = getMessages();
-                msgs.push(msg);
-                saveMessages(msgs);
-                messageInput.value = '';
-
-                // فوراً نشون بده
-                const myName = localStorage.getItem('chat_username') || 'ناشناس';
-                appendMessage(msg, myName);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                if (!error) {
+                    messageInput.value = '';
+                } else {
+                    console.error('خطا در ارسال:', error);
+                }
             }
 
             // ===== GROUP SWITCH =====
@@ -812,8 +866,12 @@
                 groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
                 chatMessages.innerHTML = '';
                 renderedIds.clear();
-                renderAllMessages();
+
+                loadAllMessages();
+                subscribeToRealtime();
                 broadcastPresence();
+                updateOnlineDisplay();
+
                 if (window.innerWidth <= 768) sidebar.classList.remove('open');
             }
 
@@ -826,7 +884,6 @@
             messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
             menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
-            // بستن منو با کلیک خارج
             document.addEventListener('click', (e) => {
                 if (!sidebar.contains(e.target) && e.target !== menuToggle && sidebar.classList.contains('open')) {
                     sidebar.classList.remove('open');
@@ -834,35 +891,38 @@
             });
 
             // ===== INIT =====
-            renderAllMessages();
+            loadAllMessages();
+            subscribeToRealtime();
+            subscribeToPresence();
             broadcastPresence();
             updateOnlineDisplay();
 
-            // پولینگ
-            setInterval(broadcastPresence, 4000);
-            setInterval(renderNewMessages, 1500); // هر ۱.۵ ثانیه پیام جدید چک کن
-            setInterval(cleanupOnlineUsers, 10000);
+            // پولینگ حضور
+            setInterval(broadcastPresence, 5000);
+            setInterval(cleanupOnlineUsers, 15000);
 
             // خروج
-            window.addEventListener('beforeunload', () => {
-                let users = getOnlineUsers();
-                delete users[userId];
-                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            window.addEventListener('beforeunload', async () => {
+                await supabase
+                    .from('online_users')
+                    .delete()
+                    .eq('user_id', userId);
             });
 
             // visibility
-            document.addEventListener('visibilitychange', () => {
+            document.addEventListener('visibilitychange', async () => {
                 if (document.hidden) {
-                    let users = getOnlineUsers();
-                    delete users[userId];
-                    localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                    await supabase
+                        .from('online_users')
+                        .delete()
+                        .eq('user_id', userId);
                 } else {
                     broadcastPresence();
-                    renderNewMessages();
+                    updateOnlineDisplay();
                 }
             });
 
-            console.log('🏎️ چت آماده! پیام‌ها موندگارن 💾');
+            console.log('❄️ چت با Supabase آماده! پیام‌ها بلادرنگ و اشتراکی 🏎️');
         })();
     </script>
 </body>
