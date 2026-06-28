@@ -2,7 +2,8 @@
 const SUPABASE_URL = 'https://kmgtrqwcuuqdgrgmkvkf.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ3RycXdjdXVxZGdyZ21rdmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTY2MjIsImV4cCI6MjA5ODIzMjYyMn0.i22KZmspL89WZreO05p0PU4lP3UnYLfGPSZ-tOWo_b4';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// اسم متفاوت بده که تداخل نکنه
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===== توابع مشترک =====
 function getAvatar(name) {
@@ -20,12 +21,11 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ===== چک کردن لاگین =====
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     
     if (session?.user) {
-        const { data: profile } = await supabase
+        const { data: profile } = await supabaseClient
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
@@ -39,7 +39,6 @@ async function checkAuth() {
             avatar: profile?.avatar || getAvatar(profile?.username || 'کاربر')
         };
 
-        // ذخیره برای استفاده در chat.html
         localStorage.setItem('chat_userId', userData.id);
         localStorage.setItem('chat_username', userData.username);
         localStorage.setItem('chat_userRole', userData.role);
@@ -51,7 +50,6 @@ async function checkAuth() {
     return null;
 }
 
-// ===== ثبت‌نام =====
 async function signupUser(username, email, password) {
     if (!username || !email || !password) {
         showToast('❌ همه فیلدها رو پر کن', 'error');
@@ -62,7 +60,7 @@ async function signupUser(username, email, password) {
         return null;
     }
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
         email, password,
         options: { data: { username } }
     });
@@ -72,8 +70,7 @@ async function signupUser(username, email, password) {
         return null;
     }
 
-    // ذخیره پروفایل
-    await supabase.from('profiles').insert({
+    await supabaseClient.from('profiles').insert({
         id: authData.user.id,
         username,
         role: 'user',
@@ -84,14 +81,13 @@ async function signupUser(username, email, password) {
     return authData;
 }
 
-// ===== ورود =====
 async function loginUser(email, password) {
     if (!email || !password) {
         showToast('❌ ایمیل و رمز رو وارد کن', 'error');
         return null;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (error) {
         showToast('❌ ' + error.message, 'error');
@@ -103,11 +99,23 @@ async function loginUser(email, password) {
     return userData;
 }
 
-// ===== خروج =====
 async function logoutUser() {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     localStorage.removeItem('chat_userId');
     localStorage.removeItem('chat_username');
     localStorage.removeItem('chat_userRole');
     localStorage.removeItem('chat_avatar');
+}
+
+async function resetPassword(email) {
+    if (!email) {
+        showToast('❌ ایمیل رو وارد کن', 'error');
+        return;
+    }
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+    if (error) {
+        showToast('❌ ' + error.message, 'error');
+    } else {
+        showToast('📧 لینک بازنشانی به ایمیلت ارسال شد', 'success');
+    }
 }
