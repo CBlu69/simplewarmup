@@ -504,133 +504,112 @@
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
+       <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
-
-<!-- ۱. اول کتابخونه Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- ۲. بعد auth.js (که supabase رو تعریف می‌کنه) -->
-<script src="auth.js"></script>
-
-<!-- ۳. بعد app.js (بدون تعریف دوباره supabase) -->
-<script src="app.js"></script>
-
-<!-- ۴. آخر از همه، اسکریپت مودال و لاگین -->
-<script>
-(function() {
-    // صبر کن تا همه چی لود بشه
-    if (typeof checkAuth !== 'function') {
-        console.error('❌ checkAuth تعریف نشده. auth.js رو چک کن.');
-        return;
-    }
-
-    const modal = document.getElementById('authModal');
-    const closeModal = document.getElementById('closeModal');
-    
-    function openAuthModal() { modal.classList.add('open'); }
-    closeModal.addEventListener('click', () => modal.classList.remove('open'));
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-
-    // دکمه‌های چت
-    document.getElementById('heroChatBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        openAuthModal();
-    });
-
-    document.getElementById('chatPreviewBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        openAuthModal();
-    });
-
-    document.getElementById('navChatBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        checkAuth().then(user => {
-            if (user) window.location.href = 'chat.html';
-            else openAuthModal();
-        });
-    });
-
-    // سوییچ فرم‌ها
-    document.getElementById('showSignup')?.addEventListener('click', () => {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('signupForm').style.display = 'flex';
-        document.getElementById('resetForm').style.display = 'none';
-    });
-    document.getElementById('showLogin')?.addEventListener('click', () => {
-        document.getElementById('signupForm').style.display = 'none';
-        document.getElementById('loginForm').style.display = 'flex';
-        document.getElementById('resetForm').style.display = 'none';
-    });
-    document.getElementById('showReset')?.addEventListener('click', () => {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('resetForm').style.display = 'flex';
-    });
-    document.getElementById('showLogin2')?.addEventListener('click', () => {
-        document.getElementById('resetForm').style.display = 'none';
-        document.getElementById('loginForm').style.display = 'flex';
-    });
-
-    // ثبت‌نام
-    document.getElementById('signupBtn')?.addEventListener('click', async () => {
-        const username = document.getElementById('signupUsername').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const password = document.getElementById('signupPassword').value;
-        const result = await signupUser(username, email, password);
-        if (result) {
-            document.getElementById('signupForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'flex';
-        }
-    });
-
-    // ورود
-    document.getElementById('loginBtn')?.addEventListener('click', async () => {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const userData = await loginUser(email, password);
-        if (userData) {
-            modal.classList.remove('open');
-            updateButtons(userData.username);
-            window.location.href = 'chat.html';
-        }
-    });
-
-    // فراموشی رمز
-    document.getElementById('resetBtn')?.addEventListener('click', async () => {
-        const email = document.getElementById('resetEmail').value.trim();
-        await resetPassword(email);
-        document.getElementById('resetForm').style.display = 'none';
-        document.getElementById('loginForm').style.display = 'flex';
-    });
-
-    // آپدیت دکمه‌ها
-    function updateButtons(username) {
-        ['heroChatBtn', 'chatPreviewBtn'].forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.textContent = '💬 چت (' + username + ')';
-                btn.onclick = () => window.location.href = 'chat.html';
-            }
-        });
-        const navBtn = document.getElementById('navChatBtn');
-        if (navBtn) {
-            navBtn.title = 'چت (' + username + ')';
-            navBtn.onclick = () => window.location.href = 'chat.html';
-        }
-    }
-
-    // چک لاگین اولیه
-    checkAuth().then(user => {
-        if (user) updateButtons(user.username);
-    });
-})();
-</script>
-</body>
 
     <!-- FOOTER -->
     <footer class="footer">☁️ C Blu — تمامی حقوق محفوظ است © 1405</footer>
 
+    <!-- اسکریپت‌ها -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
     <script src="app.js"></script>
-</body>
+    <script>
+    (function() {
+        if (typeof checkAuth !== 'function') {
+            console.error('❌ checkAuth تعریف نشده. auth.js رو چک کن.');
+            return;
+        }
 
+        const modal = document.getElementById('authModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        function openAuthModal() { modal.classList.add('open'); }
+        closeModal.addEventListener('click', () => modal.classList.remove('open'));
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+
+        document.getElementById('heroChatBtn')?.addEventListener('click', (e) => {
+            e.preventDefault(); openAuthModal();
+        });
+
+        document.getElementById('chatPreviewBtn')?.addEventListener('click', (e) => {
+            e.preventDefault(); openAuthModal();
+        });
+
+        document.getElementById('navChatBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            checkAuth().then(user => {
+                if (user) window.location.href = 'chat.html';
+                else openAuthModal();
+            });
+        });
+
+        document.getElementById('showSignup')?.addEventListener('click', () => {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'flex';
+            document.getElementById('resetForm').style.display = 'none';
+        });
+        document.getElementById('showLogin')?.addEventListener('click', () => {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('resetForm').style.display = 'none';
+        });
+        document.getElementById('showReset')?.addEventListener('click', () => {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('resetForm').style.display = 'flex';
+        });
+        document.getElementById('showLogin2')?.addEventListener('click', () => {
+            document.getElementById('resetForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'flex';
+        });
+
+        document.getElementById('signupBtn')?.addEventListener('click', async () => {
+            const r = await signupUser(
+                document.getElementById('signupUsername').value.trim(),
+                document.getElementById('signupEmail').value.trim(),
+                document.getElementById('signupPassword').value
+            );
+            if (r) {
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'flex';
+            }
+        });
+
+        document.getElementById('loginBtn')?.addEventListener('click', async () => {
+            const userData = await loginUser(
+                document.getElementById('loginEmail').value.trim(),
+                document.getElementById('loginPassword').value
+            );
+            if (userData) {
+                modal.classList.remove('open');
+                updateButtons(userData.username);
+                window.location.href = 'chat.html';
+            }
+        });
+
+        document.getElementById('resetBtn')?.addEventListener('click', async () => {
+            await resetPassword(document.getElementById('resetEmail').value.trim());
+            document.getElementById('resetForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'flex';
+        });
+
+        function updateButtons(username) {
+            ['heroChatBtn', 'chatPreviewBtn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.textContent = '💬 چت (' + username + ')';
+                    btn.onclick = () => window.location.href = 'chat.html';
+                }
+            });
+            const navBtn = document.getElementById('navChatBtn');
+            if (navBtn) {
+                navBtn.title = 'چت (' + username + ')';
+                navBtn.onclick = () => window.location.href = 'chat.html';
+            }
+        }
+
+        checkAuth().then(user => { if (user) updateButtons(user.username); });
+    })();
+    </script>
+</body>
 </html>
