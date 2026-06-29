@@ -1,7 +1,7 @@
 /* ==================== FLIP CARDS - CLICK ONLY ==================== */
 (function initFlipCards() {
     document.querySelectorAll('.flip-card').forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             const inner = this.querySelector('.flip-card-inner');
             inner.classList.toggle('flipped');
         });
@@ -194,7 +194,7 @@
             avatar: getAvatar(name),
             timestamp: Date.now()
         };
-        
+
         let users = getOnlineUsers();
         users[userId] = presence;
         localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
@@ -328,6 +328,7 @@
         renderMessages();
     }
 
+
     // ===== EVENT LISTENERS =====
     sendPreviewBtn.addEventListener('click', sendMessage);
 
@@ -342,10 +343,10 @@
 
     // Refresh messages
     setInterval(renderMessages, 2000);
-    
+
     // Broadcast presence
     setInterval(broadcastPresence, 5000);
-    
+
     // Cleanup
     setInterval(cleanupOnlineUsers, 15000);
 
@@ -373,7 +374,7 @@
 /* ==================== SHOP BUTTONS ==================== */
 (function initShopButtons() {
     document.querySelectorAll('.shop-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const card = this.closest('.shop-card');
             const title = card.querySelector('.shop-title').textContent;
@@ -402,3 +403,43 @@
 })();
 
 console.log('☁️ Simple Warmup - Ready! 🏎️');
+
+
+/* ==================== SCROLL CAR (IMPALA) ==================== */
+(function initScrollCar() {
+    const car = document.getElementById('scrollCar');
+    const img = car?.querySelector('img');
+    if (!car || !img) return;
+
+    let lastScroll = 0;
+
+    function moveCar() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        
+        if (docHeight <= 0) return;
+        
+        const scrollPercent = Math.min(scrollTop / docHeight, 1);
+        const startTop = window.innerHeight * 0.12;
+        const maxTop = window.innerHeight - 100;
+        const newTop = startTop + (scrollPercent * (maxTop - startTop));
+        
+        car.style.top = newTop + 'px';
+
+        // جهت ایمپالا
+        if (scrollTop > lastScroll) {
+            // داره میره پایین → رو به پایین
+            img.style.transform = 'scaleY(-1)';
+        } else {
+            // داره میره بالا → رو به بالا (عادی)
+            img.style.transform = 'scaleY(1)';
+        }
+        
+        lastScroll = scrollTop;
+    }
+
+    window.addEventListener('scroll', moveCar, { passive: true });
+    moveCar();
+    
+    console.log('🏎️ ایمپالا با جهت‌یابی آماده‌ست!');
+})();

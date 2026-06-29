@@ -825,6 +825,7 @@ body::after {
 
 /* ================= RESPONSIVE - MOBILE ================= */
 @media (max-width: 768px) {
+
     /* ===== NAV ===== */
     .nav {
         padding: 10px 16px;
@@ -1166,6 +1167,7 @@ body::after {
         font-size: 56px;
     }
 }
+
 /* ================= FLIP CARDS ================= */
 .cars-flip-grid {
     display: grid;
@@ -1208,8 +1210,8 @@ body::after {
     border: 1px solid rgba(125, 211, 252, 0.25);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
-    box-shadow: 
-        0 15px 40px rgba(0, 0, 0, 0.3), 
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.3),
         0 0 30px rgba(93, 213, 248, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
@@ -1291,14 +1293,20 @@ body::after {
 
 .car-placeholder.tuned {
     font-size: 90px;
-    filter: drop-shadow(0 10px 30px rgba(93, 213, 248, 0.5)) 
-            drop-shadow(0 0 20px rgba(239, 68, 68, 0.3));
+    filter: drop-shadow(0 10px 30px rgba(93, 213, 248, 0.5)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.3));
     animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes pulse-glow {
-    0%, 100% { filter: drop-shadow(0 10px 30px rgba(93, 213, 248, 0.5)); }
-    50% { filter: drop-shadow(0 10px 40px rgba(93, 213, 248, 0.8)) drop-shadow(0 0 30px rgba(239, 68, 68, 0.4)); }
+
+    0%,
+    100% {
+        filter: drop-shadow(0 10px 30px rgba(93, 213, 248, 0.5));
+    }
+
+    50% {
+        filter: drop-shadow(0 10px 40px rgba(93, 213, 248, 0.8)) drop-shadow(0 0 30px rgba(239, 68, 68, 0.4));
+    }
 }
 
 /* Info Area */
@@ -1398,8 +1406,15 @@ body::after {
 }
 
 @keyframes hint-pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 /* Responsive */
@@ -1407,7 +1422,7 @@ body::after {
     .cars-flip-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .flip-card {
         height: 560px;
     }
@@ -1584,11 +1599,56 @@ body::after {
     font-size: 12px !important;
 }
 
-/* ================= CHAT PREVIEW ================= */
-.chat-preview-card {
-    max-width: 700px;
+/* ================= CHAT PREVIEW LAYOUT ================= */
+.chat-preview-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1000px;
     margin: 0 auto;
+    align-items: stretch;
+}
+
+/* عکس سمت راست */
+.chat-preview-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    max-height: 350px;
+    padding: 0;
+}
+
+.chat-side-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 24px;
+}
+
+.image-overlay-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(4, 26, 46, 0.9));
+    color: var(--ice2);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+    border-radius: 0 0 24px 24px;
+}
+
+/* چت سمت چپ */
+.chat-preview-card {
     padding: 28px;
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-preview-header {
@@ -1600,6 +1660,7 @@ body::after {
     border-bottom: 1px solid rgba(125, 211, 252, 0.15);
     font-size: 14px;
     color: var(--ice2);
+    flex-shrink: 0;
 }
 
 .online-dot {
@@ -1612,16 +1673,24 @@ body::after {
 }
 
 @keyframes onlinePulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .chat-preview-messages {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-bottom: 20px;
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
 }
 
@@ -1653,6 +1722,7 @@ body::after {
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .chat-preview-input input {
@@ -1676,6 +1746,7 @@ body::after {
     text-align: center;
     padding-top: 20px;
     border-top: 1px solid rgba(125, 211, 252, 0.15);
+    flex-shrink: 0;
 }
 
 .chat-preview-cta p {
@@ -1684,20 +1755,33 @@ body::after {
     margin-bottom: 12px;
 }
 
-/* Responsive */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
-    .warmup-grid {
+    .chat-preview-layout {
         grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 4px;
     }
-    
-    .shop-grid {
-        grid-template-columns: 1fr;
+
+    .chat-preview-image {
+        min-height: 250px;
+        order: -1;
     }
-    
-    .time-number {
-        font-size: 56px;
+
+    .image-overlay-text {
+        font-size: 16px;
+        padding: 16px;
+    }
+
+    .chat-preview-card {
+        padding: 20px 16px;
+    }
+
+    .chat-preview-messages {
+        max-height: 180px;
     }
 }
+
 /* ================= AUTH CONTAINER ================= */
 .auth-container {
     min-height: 100vh;
@@ -1849,8 +1933,15 @@ body::after {
 }
 
 @keyframes glow {
-    0%, 100% { filter: drop-shadow(0 0 3px gold); }
-    50% { filter: drop-shadow(0 0 8px gold); }
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 3px gold);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 8px gold);
+    }
 }
 
 /* ================= TOAST ================= */
@@ -1915,6 +2006,7 @@ body::after {
     border-color: rgba(239, 68, 68, 0.5);
     color: #fecaca;
 }
+
 /* ===== MODAL OVERLAY ===== */
 .modal-overlay {
     position: fixed;
@@ -1965,4 +2057,189 @@ body::after {
     background: rgba(239, 68, 68, 0.3);
     border-color: #ef4444;
     color: #fca5a5;
+}
+
+/* ================= CUSTOM SCROLLBAR ================= */
+/* حذف اسکرول‌بار پیش‌فرض */
+::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+}
+
+/* اسکرول‌بار برای chat-messages (بمونه) */
+.chat-messages::-webkit-scrollbar,
+.chat-preview-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-track,
+.chat-preview-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb,
+.chat-preview-messages::-webkit-scrollbar-thumb {
+    background: rgba(93, 213, 248, 0.3);
+    border-radius: 2px;
+}
+
+/* ================= SCROLL CAR (IMPALA) ================= */
+.scroll-car {
+    position: fixed;
+    right: 8px;
+    top: 10%;
+    z-index: 999;
+    pointer-events: none;
+    filter: drop-shadow(0 0 15px rgba(93, 213, 248, 0.5));
+    opacity: 0.7;
+    transition: top 0.3s ease-out;
+}
+
+.scroll-car img {
+    width: 50px;
+    height: auto;
+    display: block;
+}
+
+/* مخفی روی موبایل - ریزتر */
+@media (max-width: 768px) {
+    .scroll-car {
+        right: 3px;
+    }
+
+    .scroll-car img {
+        width: 28px;
+    }
+}
+
+/* ================= HERO CAR IMAGE ANIMATION ================= */
+.car-wrap .protected-image {
+    animation: carBreathing 3s ease-in-out infinite, carGlow 4s ease-in-out infinite;
+    transition: transform 0.5s ease;
+}
+
+@keyframes carBreathing {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0 20px 60px rgba(93, 213, 248, 0.3));
+    }
+
+    50% {
+        transform: scale(1.03);
+        filter: brightness(1.1) drop-shadow(0 25px 70px rgba(93, 213, 248, 0.5));
+    }
+}
+
+@keyframes carGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 20px 60px rgba(93, 213, 248, 0.3)) drop-shadow(0 0 80px rgba(14, 165, 233, 0.2));
+    }
+
+    50% {
+        filter: drop-shadow(0 25px 70px rgba(93, 213, 248, 0.5)) drop-shadow(0 0 100px rgba(14, 165, 233, 0.4));
+    }
+}
+
+.car-wrap .protected-image:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 30px 80px rgba(93, 213, 248, 0.6)) drop-shadow(0 0 120px rgba(14, 165, 233, 0.5)) !important;
+}
+
+/* ================= CHAT SIDE IMAGE ANIMATION ================= */
+.chat-side-image {
+    animation: chatImageFloat 5s ease-in-out infinite;
+    transition: transform 0.5s ease;
+}
+
+@keyframes chatImageFloat {
+
+    0%,
+    100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1) saturate(1);
+    }
+
+    25% {
+        transform: scale(1.02) translateY(-5px);
+        filter: brightness(1.05) saturate(1.1);
+    }
+
+    50% {
+        transform: scale(1.01) translateY(-3px);
+        filter: brightness(1.08) saturate(1.15);
+    }
+
+    75% {
+        transform: scale(1.03) translateY(-8px);
+        filter: brightness(1.03) saturate(1.05);
+    }
+}
+
+.chat-side-image:hover {
+    transform: scale(1.04) !important;
+    filter: brightness(1.15) saturate(1.2) drop-shadow(0 0 30px rgba(93, 213, 248, 0.4)) !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    @keyframes carBreathing {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+        }
+    }
+
+    @keyframes chatImageFloat {
+
+        0%,
+        100% {
+            transform: scale(1) translateY(0);
+        }
+
+        50% {
+            transform: scale(1.02) translateY(-3px);
+        }
+    }
+}
+
+/* ================= HERO CAR IMAGE ================= */
+.car-wrap .protected-image {
+    animation: carBreathing 8s ease-in-out infinite;
+    transition: none !important;
+    pointer-events: none;
+}
+
+.car-wrap .protected-image:hover {
+    transform: none !important;
+    filter: none !important;
+}
+
+@keyframes carBreathing {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ================= CHAT SIDE IMAGE ================= */
+.chat-side-image {
+    animation: none !important;
+    transition: none !important;
+    pointer-events: none;
+}
+
+.chat-side-image:hover {
+    transform: none !important;
+    filter: none !important;
 }

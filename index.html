@@ -412,7 +412,6 @@
             ">🚀 به زودی...</div>
             </div>
         </div>
-        </div>
     </section>
 
     <!-- ===== LIVE CHAT PREVIEW ===== -->
@@ -422,23 +421,34 @@
             <p>LIVE CHAT COMMUNITY</p>
             <div class="ice-line"></div>
         </div>
-        <div class="glass chat-preview-card reveal">
-            <div class="chat-preview-header">
-                <span>💬 چت عمومی</span>
-                <span class="online-dot"></span>
-                <span id="onlineCount">۱۲ نفر آنلاین</span>
+
+        <div class="chat-preview-layout reveal">
+
+            <!-- عکس سمت راست -->
+            <div class="chat-preview-image">
+                <img src="chat-car.png" alt="ماشین" class="chat-side-image" draggable="false"
+                    oncontextmenu="return false;" style="user-select: none; -webkit-user-drag: none;">
             </div>
-            <div class="chat-preview-messages" id="previewMessages"></div>
-            <div class="chat-preview-input">
-                <input type="text" placeholder="برای چت کامل باید وارد بشی..." id="previewInput" maxlength="200"
-                    disabled>
-                <button class="btn-ice" id="sendPreviewBtn" disabled>📨</button>
+
+            <!-- چت سمت چپ -->
+            <div class="glass chat-preview-card">
+                <div class="chat-preview-header">
+                    <span>💬 چت عمومی</span>
+                    <span class="online-dot"></span>
+                    <span id="onlineCount">۱۲ نفر آنلاین</span>
+                </div>
+                <div class="chat-preview-messages" id="previewMessages"></div>
+                <div class="chat-preview-input">
+                    <input type="text" placeholder="برای چت کامل باید وارد بشی..." id="previewInput" maxlength="200"
+                        disabled>
+                    <button class="btn-ice" id="sendPreviewBtn" disabled>📨</button>
+                </div>
+                <div class="chat-preview-cta">
+                    <p>برای چت کامل و گروه‌های تخصصی 👇</p>
+                    <button class="btn-ice primary" id="chatPreviewBtn">💬 ورود به چت کامل</button>
+                </div>
             </div>
-            <div class="chat-preview-cta">
-                <p>برای چت کامل و گروه‌های تخصصی 👇</p>
-                <button class="btn-ice primary" id="chatPreviewBtn" style="display:inline-block;">💬 ورود به چت
-                    کامل</button>
-            </div>
+
         </div>
     </section>
 
@@ -509,6 +519,10 @@
 
     <!-- FOOTER -->
     <footer class="footer">☁️ C Blu — تمامی حقوق محفوظ است © 1405</footer>
+    <!-- SCROLL CAR -->
+    <div class="scroll-car" id="scrollCar">
+        <img src="impala.png" alt="ایمپالا" draggable="false">
+    </div>
 
     <!-- اسکریپت‌ها -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -608,9 +622,13 @@
                 }
             }
 
+
+
             checkAuth().then(user => { if (user) updateButtons(user.username); });
         })();
     </script>
+
+
 </body>
 
 </html>
