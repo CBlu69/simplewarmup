@@ -32,7 +32,6 @@
             overflow: hidden;
             position: fixed;
             inset: 0;
-            font-family: 'Vazirmatn', sans-serif;
         }
 
         .chat-container {
@@ -43,6 +42,7 @@
             z-index: 2;
         }
 
+        /* Sidebar */
         .chat-sidebar {
             width: 260px;
             background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(93, 213, 248, 0.04));
@@ -86,59 +86,41 @@
             color: #fff;
         }
 
-        .display-username {
+        .user-card-mini {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: rgba(14, 165, 233, 0.15);
-            border: 1px solid rgba(125, 211, 252, 0.25);
-            border-radius: 30px;
-            color: var(--ice2);
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .admin-badge {
-            font-size: 16px;
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-
-            0%,
-            100% {
-                filter: drop-shadow(0 0 3px gold);
-            }
-
-            50% {
-                filter: drop-shadow(0 0 8px gold);
-            }
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            font-size: 12px;
-            cursor: pointer;
-            font-family: 'Vazirmatn', sans-serif;
-            transition: 0.3s;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            border-radius: 14px;
             margin-bottom: 20px;
-            width: 100%;
-            justify-content: center;
         }
 
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.25);
-            border-color: rgba(239, 68, 68, 0.5);
-            color: #fecaca;
+        .user-avatar-mini {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .user-name-input {
+            background: none;
+            border: none;
+            color: var(--ice2);
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .user-name-input::placeholder {
+            color: rgba(179, 236, 255, 0.3);
         }
 
         .sidebar-section {
@@ -187,6 +169,7 @@
             font-size: 10px;
         }
 
+        /* Main Chat */
         .chat-main {
             flex: 1;
             display: flex;
@@ -239,6 +222,7 @@
             }
         }
 
+        /* Messages */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -325,6 +309,7 @@
             color: rgba(179, 236, 255, 0.25);
         }
 
+        /* Msg Actions */
         .msg-actions {
             display: none;
             position: absolute;
@@ -395,6 +380,7 @@
             font-family: 'Vazirmatn', sans-serif;
         }
 
+        /* Input - FIXED BOTTOM */
         .chat-input-area {
             padding: 10px 12px;
             padding-bottom: calc(10px + var(--safe-bottom));
@@ -445,26 +431,14 @@
         /* Mobile */
         .mobile-toggle {
             display: none;
-            background: rgba(14, 165, 233, 0.2);
-            border: 1px solid rgba(125, 211, 252, 0.3);
+            background: none;
+            border: none;
             color: var(--ice2);
             font-size: 20px;
             cursor: pointer;
-            z-index: 300;
-            position: relative;
         }
 
         @media (max-width: 768px) {
-            .mobile-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                flex-shrink: 0;
-            }
-
             .chat-sidebar {
                 display: none;
                 position: fixed;
@@ -472,50 +446,50 @@
                 top: 0;
                 bottom: 0;
                 z-index: 200;
-                width: 280px;
+                width: 260px;
             }
 
             .chat-sidebar.open {
                 display: flex;
             }
-        }
 
-        .mobile-toggle {
-            display: block;
-        }
+            .mobile-toggle {
+                display: block;
+            }
 
-        .message {
-            max-width: 88%;
-        }
+            .message {
+                max-width: 88%;
+            }
 
-        .chat-header {
-            padding: 10px 12px;
-        }
+            .chat-header {
+                padding: 10px 12px;
+            }
 
-        .chat-messages {
-            padding: 12px;
-            gap: 4px;
-        }
+            .chat-messages {
+                padding: 12px;
+                gap: 4px;
+            }
 
-        .msg-bubble {
-            font-size: 12px;
-            padding: 7px 10px;
-        }
+            .msg-bubble {
+                font-size: 12px;
+                padding: 7px 10px;
+            }
 
-        .chat-input-area {
-            padding: 8px 10px;
-            padding-bottom: calc(8px + var(--safe-bottom));
-        }
+            .chat-input-area {
+                padding: 8px 10px;
+                padding-bottom: calc(8px + var(--safe-bottom));
+            }
 
-        .chat-input-area input {
-            padding: 8px 12px;
-            font-size: 13px;
-        }
+            .chat-input-area input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
 
-        .send-btn {
-            width: 38px;
-            height: 38px;
-            font-size: 16px;
+            .send-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -532,14 +506,16 @@
 
         <aside class="chat-sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="display-username" id="displayUsername">
-                    <span id="userAvatar"></span>
-                    <span id="userName"></span>
-                    <span id="adminBadge" style="display:none;">👑</span>
-                </div>
+                <h3>🏎️ چت ماشین‌بازها</h3>
                 <a href="index.html" class="back-btn">← برگشت</a>
             </div>
-            <button class="logout-btn" id="logoutBtn">🚪 خروج</button>
+
+            <div class="user-card-mini">
+                <div class="user-avatar-mini">👤</div>
+                <input type="text" class="user-name-input" id="usernameInput" placeholder="اسم خودت رو بنویس..."
+                    maxlength="20">
+            </div>
+
             <div class="sidebar-section">
                 <h4>گروه‌ها</h4>
                 <div class="group-item active" data-group="general">
@@ -558,6 +534,7 @@
                 </div>
             </div>
         </aside>
+
         <main class="chat-main">
             <div class="chat-header">
                 <button class="mobile-toggle" id="menuToggle">☰</button>
@@ -576,332 +553,317 @@
             </div>
         </main>
 
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="auth.js"></script>
-        <script>
-            (async function () {
-                const supabase = supabaseClient;
+    </div>
 
-                // ===== چک لاگین =====
-                const user = await checkAuth();
-                // گرفتن مستقیم role از دیتابیس
-                const { data: profile } = await supabaseClient
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
+    <script>
+        (function () {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const usernameInput = document.getElementById('usernameInput');
+            const groupTitle = document.getElementById('groupTitle');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const onlineCount = document.getElementById('onlineCount');
 
-                if (profile) {
-                    user.role = profile.role;
-                    localStorage.setItem('chat_userRole', profile.role);
-                }
+            let currentGroup = 'general';
+            let username = localStorage.getItem('chat_username') || '';
+            let userId = localStorage.getItem('chat_userId');
+            let renderedIds = new Set(); // ست کردن IDهای رندر شده
 
-                console.log('✅ user.role:', user.role);
-                if (!user) {
-                    window.location.href = 'index.html';
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('chat_userId', userId);
+            }
+
+            if (username) usernameInput.value = username;
+
+            usernameInput.addEventListener('input', () => {
+                username = usernameInput.value.trim();
+                localStorage.setItem('chat_username', username);
+                broadcastPresence();
+            });
+
+            // ===== ONLINE SYSTEM =====
+            const ONLINE_KEY = 'sw_chat_online';
+
+            function getOnlineUsers() {
+                try { return JSON.parse(localStorage.getItem(ONLINE_KEY)) || {}; }
+                catch (e) { return {}; }
+            }
+
+            function broadcastPresence() {
+                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                const presence = {
+                    userId, username: name, group: currentGroup,
+                    avatar: getAvatar(name), timestamp: Date.now()
+                };
+                let users = getOnlineUsers();
+                users[userId] = presence;
+                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                updateOnlineDisplay();
+            }
+
+            function cleanupOnlineUsers() {
+                let users = getOnlineUsers();
+                const now = Date.now();
+                let changed = false;
+                Object.keys(users).forEach(id => {
+                    if (now - users[id].timestamp > 8000) { delete users[id]; changed = true; }
+                });
+                if (changed) { localStorage.setItem(ONLINE_KEY, JSON.stringify(users)); updateOnlineDisplay(); }
+            }
+
+            function updateOnlineDisplay() {
+                const users = getOnlineUsers();
+                const total = Object.keys(users).length;
+                if (onlineCount) onlineCount.textContent = `${total} نفر آنلاین`;
+                document.querySelectorAll('.group-item').forEach(item => {
+                    const g = item.dataset.group;
+                    const count = Object.values(users).filter(u => u.group === g).length;
+                    const el = item.querySelector('.group-count');
+                    if (el) el.textContent = `${count} آنلاین`;
+                });
+            }
+
+            // ===== MESSAGES =====
+            function getStorageKey() {
+                return `sw_msg_${currentGroup}`;
+            }
+
+            function getMessages() {
+                try { return JSON.parse(localStorage.getItem(getStorageKey())) || []; }
+                catch (e) { return []; }
+            }
+
+            function saveMessages(msgs) {
+                localStorage.setItem(getStorageKey(), JSON.stringify(msgs.slice(-200)));
+            }
+
+            function escapeHtml(t) {
+                const d = document.createElement('div');
+                d.textContent = t;
+                return d.innerHTML;
+            }
+
+            function getAvatar(name) {
+                const av = ['🚗', '🏎️', '🚙', '🔥', '💨', '⚡', '🔧', '🎵'];
+                let h = 0;
+                for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+                return av[Math.abs(h) % av.length];
+            }
+
+            // رندر کامل (برای بار اول یا تغییر گروه)
+            function renderAllMessages() {
+                const msgs = getMessages();
+                const myName = localStorage.getItem('chat_username') || 'ناشناس';
+
+                chatMessages.innerHTML = '';
+                renderedIds.clear();
+
+                if (!msgs.length) {
+                    chatMessages.innerHTML = `
+                    <div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;">
+                        <div style="font-size:40px;margin-bottom:12px;">💬</div>
+                        <p>هنوز پیامی نیست!</p>
+                        <p style="font-size:12px;">اولین نفر باش که پیام میده</p>
+                    </div>`;
                     return;
                 }
 
-                const username = user.username;
-                const userId = user.id;
-
-                // ===== DOM ELEMENTS =====
-                const chatMessages = document.getElementById('chatMessages');
-                const messageInput = document.getElementById('messageInput');
-                const sendBtn = document.getElementById('sendBtn');
-                const groupTitle = document.getElementById('groupTitle');
-                const menuToggle = document.getElementById('menuToggle');
-                const sidebar = document.getElementById('sidebar');
-                const onlineCount = document.getElementById('onlineCount');
-
-                let currentGroup = 'general';
-                const renderedIds = new Set();
-                let channel = null;
-
-                // نمایش اطلاعات کاربر
-                document.getElementById('userAvatar').textContent = user.avatar || '👤';
-                document.getElementById('userName').textContent = username;
-                if (user.role === 'admin') {
-                    document.getElementById('adminBadge').style.display = 'inline';
-                }
-
-                // دکمه خروج
-                document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    await logoutUser();
-                    window.location.href = 'index.html';
+                msgs.forEach(msg => {
+                    appendMessage(msg, myName);
                 });
 
-                // ===== ONLINE SYSTEM =====
-                async function broadcastPresence() {
-                    await supabase.from('online_users').upsert({
-                        user_id: userId,
-                        username: username,
-                        avatar: user.avatar,
-                        group_name: currentGroup,
-                        last_seen: new Date().toISOString()
-                    }, { onConflict: 'user_id' });
-                }
-
-                async function cleanupOnlineUsers() {
-                    const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
-                    await supabase.from('online_users').delete().lt('last_seen', tenSecondsAgo);
-                }
-
-                async function updateOnlineDisplay() {
-                    const { data: users } = await supabase.from('online_users').select('*');
-                    if (!users) return;
-                    const totalOnline = users.length;
-                    if (onlineCount) onlineCount.textContent = `${totalOnline} نفر آنلاین`;
-                    document.querySelectorAll('.group-item').forEach(item => {
-                        const g = item.dataset.group;
-                        const count = users.filter(u => u.group_name === g).length;
-                        const el = item.querySelector('.group-count');
-                        if (el) el.textContent = `${count} آنلاین`;
-                    });
-                }
-
-                // ===== MESSAGES =====
-                async function loadAllMessages() {
-                    const { data: messages } = await supabase
-                        .from('messages')
-                        .select('*')
-                        .eq('group_name', currentGroup)
-                        .order('created_at', { ascending: true })
-                        .limit(200);
-
-                    chatMessages.innerHTML = '';
-                    renderedIds.clear();
-
-                    if (!messages || messages.length === 0) {
-                        chatMessages.innerHTML = `<div style="text-align:center;color:rgba(179,236,255,0.3);padding:40px;"><div style="font-size:40px;margin-bottom:12px;">💬</div><p>هنوز پیامی نیست!</p><p style="font-size:12px;">اولین نفر باش که پیام میده</p></div>`;
-                        return;
-                    }
-
-                    messages.forEach(msg => appendMessage(msg));
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
-                function subscribeToRealtime() {
-                    if (channel) supabase.removeChannel(channel);
-                    channel = supabase
-                        .channel(`messages-${currentGroup}`)
-                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                            const msg = payload.new;
-                            if (!renderedIds.has(msg.id)) {
-                                appendMessage(msg);
-                                chatMessages.scrollTop = chatMessages.scrollHeight;
-                            }
-                        })
-                        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                            const msg = payload.new;
-                            const bubble = document.getElementById(`bubble-${msg.id}`);
-                            if (bubble) {
-                                bubble.textContent = msg.message;
-                                const infoDiv = document.getElementById(`msg-${msg.id}`)?.querySelector('.msg-info');
-                                if (infoDiv && msg.edited) {
-                                    infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span>`;
-                                }
-                            }
-                        })
-                        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `group_name=eq.${currentGroup}` }, (payload) => {
-                            const deletedId = payload.old.id;
-                            const el = document.getElementById(`msg-${deletedId}`);
-                            if (el) {
-                                el.style.opacity = '0'; el.style.transform = 'scale(0.8)'; el.style.transition = '0.3s';
-                                setTimeout(() => { el.remove(); renderedIds.delete(deletedId); }, 300);
-                            }
-                        })
-                        .subscribe();
-                }
-
-                function subscribeToPresence() {
-                    supabase.channel('online-users').on('postgres_changes', { event: '*', schema: 'public', table: 'online_users' }, () => updateOnlineDisplay()).subscribe();
-                }
-
-                function escapeHtml(t) {
-                    const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
-                }
-
-                function appendMessage(msg) {
-                    if (renderedIds.has(msg.id)) return;
-
-                    const isOwn = msg.user_id === userId;
-                    const isAdmin = localStorage.getItem('chat_userRole') === 'admin';
-                    const canDelete = isOwn || isAdmin;
-
-                    const div = document.createElement('div');
-                    div.className = `message ${isOwn ? 'own' : ''}`;
-                    div.id = `msg-${msg.id}`;
-
-                    div.innerHTML = `
-        <div class="msg-avatar">${msg.avatar || '👤'}</div>
-        <div class="msg-content">
-            <div class="msg-info">
-                <span>${msg.username}</span>
-                ${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}
-                <span>${new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.message)}</div>
-            ${canDelete ? `
-            <div class="msg-actions">
-                ${isOwn ? `<button class="msg-action-btn edit" data-id="${msg.id}">✏️</button>` : ''}
-                <button class="msg-action-btn delete" data-id="${msg.id}">🗑</button>
-            </div>` : ''}
-        </div>`;
-
-                    chatMessages.appendChild(div);
-                    renderedIds.add(msg.id);
-
-                    if (isOwn) {
-                        div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg));
-                    }
-                    if (canDelete) {
-                        div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg));
-                    }
-                }
-
-
-                function editMessage(msg) {
-                    const bubble = document.getElementById(`bubble-${msg.id}`);
-                    if (!bubble) return;
-                    const old = msg.message;
-                    bubble.innerHTML = `<input class="edit-input" id="ei-${msg.id}" value="${escapeHtml(old)}" maxlength="500"><div class="edit-actions"><button id="se-${msg.id}">💾 ذخیره</button><button id="ce-${msg.id}">لغو</button></div>`;
-                    document.getElementById(`se-${msg.id}`).onclick = async () => {
-                        const nt = document.getElementById(`ei-${msg.id}`).value.trim();
-                        if (nt && nt !== old) {
-                            await supabase.from('messages').update({ message: nt, edited: true }).eq('id', msg.id);
-                        }
-                        bubble.textContent = nt || old;
-                    };
-                    document.getElementById(`ce-${msg.id}`).onclick = () => { bubble.textContent = old; };
-                    document.getElementById(`ei-${msg.id}`).focus();
-                    document.getElementById(`ei-${msg.id}`).addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById(`se-${msg.id}`).click(); });
-                }
-
-                async function deleteMessage(msg) {
-                    const isAdmin = localStorage.getItem('chat_userRole') === 'admin';
-                    if (msg.user_id !== userId && !isAdmin) {
-                        alert('❌ فقط ادمین می‌تونه پیام بقیه رو حذف کنه');
-                        return;
-                    }
-
-                    showConfirm('این پیام حذف بشه؟', async () => {
-                        const { error } = await supabaseClient
-                            .from('messages')
-                            .delete()
-                            .eq('id', msg.id);
-
-                        if (!error) {
-                            // حذف فوری از صفحه
-                            const el = document.getElementById(`msg-${msg.id}`);
-                            if (el) {
-                                el.style.opacity = '0';
-                                el.style.transform = 'scale(0.8)';
-                                el.style.transition = '0.3s';
-                                setTimeout(() => {
-                                    el.remove();
-                                    renderedIds.delete(msg.id);
-                                }, 300);
-                            }
-                        }
-                    });
-                }
-                async function sendMessage() {
-                    const text = messageInput.value.trim();
-                    if (!text) return;
-                    const { error } = await supabase.from('messages').insert({
-                        user_id: userId, username, avatar: user.avatar,
-                        group_name: currentGroup, message: text, edited: false
-                    });
-                    if (!error) messageInput.value = '';
-                }
-
-                function switchGroup(group) {
-                    currentGroup = group;
-                    document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
-                    document.querySelector(`[data-group="${group}"]`)?.classList.add('active');
-                    groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
-                    chatMessages.innerHTML = '';
-                    renderedIds.clear();
-                    loadAllMessages();
-                    subscribeToRealtime();
-                    broadcastPresence();
-                    updateOnlineDisplay();
-                    if (window.innerWidth <= 768) sidebar.classList.remove('open');
-                }
-
-                document.querySelectorAll('.group-item').forEach(item => {
-                    item.addEventListener('click', () => switchGroup(item.dataset.group));
-                });
-
-                sendBtn.addEventListener('click', sendMessage);
-                messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
-                menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-                document.addEventListener('click', (e) => {
-                    if (!sidebar.contains(e.target) && e.target !== menuToggle && sidebar.classList.contains('open')) {
-                        sidebar.classList.remove('open');
-                    }
-                });
-
-                // ===== INIT =====
-                loadAllMessages();
-                subscribeToRealtime();
-                subscribeToPresence();
-                broadcastPresence();
-                updateOnlineDisplay();
-
-                setInterval(broadcastPresence, 5000);
-                setInterval(cleanupOnlineUsers, 15000);
-
-                window.addEventListener('beforeunload', async () => {
-                    await supabase.from('online_users').delete().eq('user_id', userId);
-                });
-
-                document.addEventListener('visibilitychange', async () => {
-                    if (document.hidden) {
-                        await supabase.from('online_users').delete().eq('user_id', userId);
-                    } else {
-                        broadcastPresence();
-                        updateOnlineDisplay();
-                    }
-                });
-
-                console.log('❄️ چت با Supabase آماده! پیام‌ها بلادرنگ و اشتراکی 🏎️');
-            })();
-        </script>
-        <!-- مودال تایید حذف -->
-        <div class="modal-overlay" id="confirmModal" style="z-index:2000;">
-            <div class="glass auth-modal-card" style="text-align:center;padding:24px;">
-                <p style="color:var(--ice2);margin-bottom:16px;" id="confirmText">این پیام حذف بشه؟</p>
-                <div style="display:flex;gap:10px;justify-content:center;">
-                    <button class="btn-ice" id="confirmYes"
-                        style="background:rgba(239,68,68,0.3);border-color:#ef4444;color:#fca5a5;">🗑 حذف</button>
-                    <button class="btn-ice" id="confirmNo">انصراف</button>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            // مودال تایید حذف
-            let confirmCallback = null;
-            const confirmModal = document.getElementById('confirmModal');
-
-            function showConfirm(text, callback) {
-                document.getElementById('confirmText').textContent = text;
-                confirmModal.classList.add('open');
-                confirmCallback = callback;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            document.getElementById('confirmYes').addEventListener('click', () => {
-                confirmModal.classList.remove('open');
-                if (confirmCallback) confirmCallback();
+            // فقط پیام‌های جدید
+            function renderNewMessages() {
+                const msgs = getMessages();
+                const myName = localStorage.getItem('chat_username') || 'ناشناس';
+                let hasNew = false;
+
+                msgs.forEach(msg => {
+                    if (!renderedIds.has(msg.id)) {
+                        appendMessage(msg, myName);
+                        hasNew = true;
+                    }
+                });
+
+                if (hasNew) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+
+            function appendMessage(msg, myName) {
+                if (renderedIds.has(msg.id)) return;
+
+                const isOwn = msg.username === myName;
+                const div = document.createElement('div');
+                div.className = `message ${isOwn ? 'own' : ''}`;
+                div.id = `msg-${msg.id}`;
+                div.innerHTML = `
+                <div class="msg-avatar">${msg.avatar || '👤'}</div>
+                <div class="msg-content">
+                    <div class="msg-info">
+                        <span>${msg.username}</span>
+                        ${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}
+                        <span>${msg.time}</span>
+                    </div>
+                    <div class="msg-bubble" id="bubble-${msg.id}">${escapeHtml(msg.text)}</div>
+                    ${isOwn ? `
+                    <div class="msg-actions">
+                        <button class="msg-action-btn edit" data-id="${msg.id}">✏️</button>
+                        <button class="msg-action-btn delete" data-id="${msg.id}">🗑</button>
+                    </div>` : ''}
+                </div>`;
+                chatMessages.appendChild(div);
+                renderedIds.add(msg.id);
+
+                if (isOwn) {
+                    div.querySelector('.edit')?.addEventListener('click', () => editMessage(msg.id));
+                    div.querySelector('.delete')?.addEventListener('click', () => deleteMessage(msg.id));
+                }
+            }
+
+            function editMessage(msgId) {
+                const msgs = getMessages();
+                const msg = msgs.find(m => m.id === msgId);
+                if (!msg) return;
+                const bubble = document.getElementById(`bubble-${msgId}`);
+                if (!bubble) return;
+                const old = msg.text;
+                bubble.innerHTML = `
+                <input class="edit-input" id="ei-${msgId}" value="${escapeHtml(old)}" maxlength="500">
+                <div class="edit-actions">
+                    <button id="se-${msgId}">💾 ذخیره</button>
+                    <button id="ce-${msgId}">لغو</button>
+                </div>`;
+                document.getElementById(`se-${msgId}`).onclick = () => {
+                    const nt = document.getElementById(`ei-${msgId}`).value.trim();
+                    if (nt && nt !== old) {
+                        msg.text = nt;
+                        msg.edited = true;
+                        msg.time = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }) + ' (ویرایش)';
+                        saveMessages(msgs);
+                    }
+                    bubble.textContent = nt || old;
+                    // آپدیت info
+                    const infoDiv = document.getElementById(`msg-${msgId}`)?.querySelector('.msg-info');
+                    if (infoDiv && msg.edited) {
+                        infoDiv.innerHTML = `<span>${msg.username}</span><span class="edited-badge">(ویرایش)</span><span>${msg.time}</span>`;
+                    }
+                };
+                document.getElementById(`ce-${msgId}`).onclick = () => { bubble.textContent = old; };
+                document.getElementById(`ei-${msgId}`).focus();
+                document.getElementById(`ei-${msgId}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') document.getElementById(`se-${msgId}`).click();
+                });
+            }
+
+            function deleteMessage(msgId) {
+                if (confirm('این پیام حذف بشه؟')) {
+                    saveMessages(getMessages().filter(m => m.id !== msgId));
+                    const el = document.getElementById(`msg-${msgId}`);
+                    if (el) {
+                        el.style.opacity = '0';
+                        el.style.transform = 'scale(0.8)';
+                        el.style.transition = '0.3s';
+                        setTimeout(() => {
+                            el.remove();
+                            renderedIds.delete(msgId);
+                        }, 300);
+                    }
+                }
+            }
+
+            function sendMessage() {
+                const text = messageInput.value.trim();
+                const name = localStorage.getItem('chat_username') || 'ناشناس';
+                if (!text) return;
+
+                const msg = {
+                    id: Date.now(),
+                    username: name,
+                    avatar: getAvatar(name),
+                    text,
+                    time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+                    group: currentGroup,
+                    edited: false
+                };
+
+                const msgs = getMessages();
+                msgs.push(msg);
+                saveMessages(msgs);
+                messageInput.value = '';
+
+                // فوراً نشون بده
+                const myName = localStorage.getItem('chat_username') || 'ناشناس';
+                appendMessage(msg, myName);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // ===== GROUP SWITCH =====
+            function switchGroup(group) {
+                currentGroup = group;
+                document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
+                document.querySelector(`[data-group="${group}"]`)?.classList.add('active');
+                groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
+                chatMessages.innerHTML = '';
+                renderedIds.clear();
+                renderAllMessages();
+                broadcastPresence();
+                if (window.innerWidth <= 768) sidebar.classList.remove('open');
+            }
+
+            document.querySelectorAll('.group-item').forEach(item => {
+                item.addEventListener('click', () => switchGroup(item.dataset.group));
             });
 
-            document.getElementById('confirmNo').addEventListener('click', () => {
-                confirmModal.classList.remove('open');
-                confirmCallback = null;
+            // ===== EVENT LISTENERS =====
+            sendBtn.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+            // بستن منو با کلیک خارج
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && e.target !== menuToggle && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
             });
-        </script>
+
+            // ===== INIT =====
+            renderAllMessages();
+            broadcastPresence();
+            updateOnlineDisplay();
+
+            // پولینگ
+            setInterval(broadcastPresence, 4000);
+            setInterval(renderNewMessages, 1500); // هر ۱.۵ ثانیه پیام جدید چک کن
+            setInterval(cleanupOnlineUsers, 10000);
+
+            // خروج
+            window.addEventListener('beforeunload', () => {
+                let users = getOnlineUsers();
+                delete users[userId];
+                localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+            });
+
+            // visibility
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    let users = getOnlineUsers();
+                    delete users[userId];
+                    localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
+                } else {
+                    broadcastPresence();
+                    renderNewMessages();
+                }
+            });
+
+        })();
+    </script>
 </body>
 
 </html>

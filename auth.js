@@ -77,7 +77,6 @@ async function signupUser(username, email, password) {
             role: 'user',
             avatar: getAvatar(username)
         });
-        console.log('📝 پروفایل ساخته شد:', data, 'ارور:', error);
     }
 
     showToast('✅ ثبت‌نام موفق! حالا وارد شو', 'success');

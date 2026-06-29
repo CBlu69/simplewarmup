@@ -368,7 +368,6 @@
         }
     });
 
-    console.log('💬 چت پریمویو با تعداد آنلاین واقعی آماده‌ست!');
 })();
 
 /* ==================== SHOP BUTTONS ==================== */
@@ -441,5 +440,4 @@ console.log('☁️ Simple Warmup - Ready! 🏎️');
     window.addEventListener('scroll', moveCar, { passive: true });
     moveCar();
     
-    console.log('🏎️ ایمپالا با جهت‌یابی آماده‌ست!');
 })();
