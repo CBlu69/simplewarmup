@@ -681,6 +681,72 @@
             });
         });
     </script>
+    <!-- MODAL بازنشانی رمز -->
+    <div class="modal-overlay" id="resetPasswordModal" style="display:none;">
+        <div class="glass auth-modal-card">
+            <button class="modal-close" id="closeResetModal">✕</button>
+            <div class="auth-logo">
+                <div class="auth-logo-text">🔒 رمز جدید</div>
+                <div class="auth-logo-sub">حداقل ۶ کاراکتر</div>
+            </div>
+            <div class="auth-form">
+                <div class="auth-input-group">
+                    <label>🔒 رمز جدید</label>
+                    <input type="password" class="auth-input" id="newResetPassword" placeholder="••••••" dir="ltr"
+                        minlength="6">
+                </div>
+                <button class="auth-btn" id="updateResetPassword">💾 تغییر رمز</button>
+                <p style="color:#86efac;text-align:center;margin-top:12px;display:none" id="resetSuccess">✅ رمز عوض شد!
+                    <a href="index.html" style="color:var(--ice3)">برو به سایت</a></p>
+                <p style="color:#fca5a5;text-align:center;margin-top:12px;display:none" id="resetError"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // اگه از لینک بازنشانی اومده (# داره و type=recovery)
+            if (window.location.hash && window.location.hash.indexOf('type=recovery') !== -1) {
+                // مودال رو نشون بده
+                document.getElementById('resetPasswordModal').style.display = 'flex';
+
+                // دکمه بستن
+                document.getElementById('closeResetModal').addEventListener('click', function () {
+                    document.getElementById('resetPasswordModal').style.display = 'none';
+                    window.location.hash = '';
+                });
+
+                // دکمه تغییر رمز
+                document.getElementById('updateResetPassword').addEventListener('click', async function () {
+                    var password = document.getElementById('newResetPassword').value;
+                    if (password.length < 6) {
+                        document.getElementById('resetError').textContent = '❌ حداقل ۶ کاراکتر لازمه';
+                        document.getElementById('resetError').style.display = 'block';
+                        return;
+                    }
+
+                    var supabase = window.supabaseClient;
+                    if (!supabase) {
+                        supabase = window.supabase.createClient(
+                            'https://kmgtrqwcuuqdgrgmkvkf.supabase.co',
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ3RycXdjdXVxZGdyZ21rdmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTY2MjIsImV4cCI6MjA5ODIzMjYyMn0.i22KZmspL89WZreO05p0PU4lP3UnYLfGPSZ-tOWo_b4'
+                        );
+                    }
+
+                    var result = await supabase.auth.updateUser({ password: password });
+
+                    if (result.error) {
+                        document.getElementById('resetError').textContent = '❌ ' + result.error.message;
+                        document.getElementById('resetError').style.display = 'block';
+                    } else {
+                        document.getElementById('newResetPassword').style.display = 'none';
+                        document.getElementById('updateResetPassword').style.display = 'none';
+                        document.getElementById('resetSuccess').style.display = 'block';
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 
 </html>
