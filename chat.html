@@ -722,18 +722,31 @@
             async function loadMessages() {
                 var result = await supabase.from('chat_messages').select('*').eq('group_name', currentGroup).order('created_at', { ascending: true }).limit(200);
                 var data = result.data;
-                chatMessages.innerHTML = '';
-                renderedIds.clear();
+
                 if (!data || !data.length) {
                     chatMessages.innerHTML = '<div style="text-align:center;color:rgba(179,236,255,.3);padding:40px">💬<br>هنوز پیامی نیست!</div>';
+                    renderedIds.clear();
                     return;
                 }
-                data.forEach(function (msg) { appendMessage(msg); });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // فقط پیام‌های جدید رو اضافه کن (اونایی که قبلاً نبودن)
+                var hasNew = false;
+                data.forEach(function (msg) {
+                    if (!renderedIds.has(msg.id)) {
+                        appendMessage(msg);
+                        hasNew = true;
+                    }
+                });
+
+                // فقط اگه پیام جدید اومده اسکرول کن
+                if (hasNew) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             }
 
             function appendMessage(msg) {
                 if (renderedIds.has(msg.id)) return;
+
                 var isOwn = msg.user_id === userId;
                 var div = document.createElement('div');
                 div.className = 'message' + (isOwn ? ' own' : '') + (msg.pinned ? ' pinned' : '');
@@ -779,6 +792,7 @@
                 item.addEventListener('click', function () { switchGroup(item.dataset.group); });
             });
 
+            // موقع تغییر گروه - فقط اینجا پاک بشه
             function switchGroup(group) {
                 currentGroup = group;
                 document.querySelectorAll('.group-item').forEach(function (i) { i.classList.remove('active'); });
@@ -786,9 +800,12 @@
                 if (activeItem) activeItem.classList.add('active');
                 var nameEl = document.querySelector('[data-group="' + group + '"] .group-name');
                 groupTitle.textContent = nameEl ? nameEl.textContent : group;
+
+                // فقط موقع تغییر گروه پاک کن
+                chatMessages.innerHTML = '';
+                renderedIds.clear();
                 loadMessages();
             }
-
             // ===== EVENTS =====
             sendBtn.addEventListener('click', sendMessage);
             messageInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendMessage(); });
