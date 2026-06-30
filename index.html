@@ -704,73 +704,86 @@
         </div>
     </div>
 
+    <!-- MODAL بازنشانی رمز -->
+    <div class="modal-overlay" id="resetPasswordModal" style="display:none; z-index: 99999;">
+        <div class="glass auth-modal-card" style="z-index: 99999; background: rgba(4,26,46,0.98);">
+            <button class="modal-close" id="closeResetModal">✕</button>
+            <div class="auth-logo">
+                <div class="auth-logo-text">🔒 رمز جدید</div>
+                <div class="auth-logo-sub">حداقل ۶ کاراکتر</div>
+            </div>
+            <div class="auth-form">
+                <div class="auth-input-group">
+                    <input type="password" class="auth-input" id="newResetPassword" placeholder="رمز جدید" dir="ltr"
+                        minlength="6" autocomplete="new-password"
+                        style="text-align:center;font-size:18px;letter-spacing:3px">
+                </div>
+                <button class="auth-btn" id="updateResetPassword">💾 تغییر رمز</button>
+                <p style="color:#86efac;text-align:center;margin-top:16px;display:none;font-size:15px"
+                    id="resetSuccess"></p>
+                <p style="color:#fca5a5;text-align:center;margin-top:12px;display:none" id="resetError"></p>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
-            // اگه از لینک بازنشانی اومده (# داره و type=recovery)
+            // چک کن لینک بازنشانی هست
             if (window.location.hash && window.location.hash.indexOf('type=recovery') !== -1) {
-                // مودال رو نشون بده
-                document.getElementById('resetPasswordModal').style.display = 'flex';
+
+                // مودال رو باز کن
+                setTimeout(function () {
+                    document.getElementById('resetPasswordModal').style.display = 'flex';
+                }, 500);
 
                 // دکمه بستن
                 document.getElementById('closeResetModal').addEventListener('click', function () {
                     document.getElementById('resetPasswordModal').style.display = 'none';
-                    window.location.hash = '';
                 });
 
-                // دکمه تغییر رمز
+                // تغییر رمز
                 document.getElementById('updateResetPassword').addEventListener('click', async function () {
                     var password = document.getElementById('newResetPassword').value;
+
                     if (password.length < 6) {
                         document.getElementById('resetError').textContent = '❌ حداقل ۶ کاراکتر لازمه';
                         document.getElementById('resetError').style.display = 'block';
+                        document.getElementById('resetSuccess').style.display = 'none';
                         return;
                     }
 
-                    var supabase = window.supabaseClient;
-                    if (!supabase) {
-                        supabase = window.supabase.createClient(
-                            'https://kmgtrqwcuuqdgrgmkvkf.supabase.co',
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ3RycXdjdXVxZGdyZ21rdmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTY2MjIsImV4cCI6MjA5ODIzMjYyMn0.i22KZmspL89WZreO05p0PU4lP3UnYLfGPSZ-tOWo_b4'
-                        );
-                    }
+                    // ساخت مستقیم Supabase client
+                    var supabase = window.supabase.createClient(
+                        'https://kmgtrqwcuuqdgrgmkvkf.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ3RycXdjdXVxZGdyZ21rdmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTY2MjIsImV4cCI6MjA5ODIzMjYyMn0.i22KZmspL89WZreO05p0PU4lP3UnYLfGPSZ-tOWo_b4'
+                    );
 
                     var result = await supabase.auth.updateUser({ password: password });
 
                     if (result.error) {
                         document.getElementById('resetError').textContent = '❌ ' + result.error.message;
                         document.getElementById('resetError').style.display = 'block';
+                        document.getElementById('resetSuccess').style.display = 'none';
                     } else {
                         document.getElementById('newResetPassword').style.display = 'none';
                         document.getElementById('updateResetPassword').style.display = 'none';
+                        document.getElementById('resetError').style.display = 'none';
+                        document.getElementById('resetSuccess').textContent = '✅ رمز با موفقیت تغییر کرد!';
                         document.getElementById('resetSuccess').style.display = 'block';
+
+                        // ریدایرکت به چت بعد از ۱.۵ ثانیه
+                        setTimeout(function () {
+                            window.location.href = 'chat.html';
+                        }, 1500);
                     }
                 });
-            }
-        })();
-    </script>
-    <script>
-        // ===== گرفتن لینک بازنشانی =====
-        (function () {
-            // اگه URL هش داره
-            if (window.location.hash) {
-                var hash = window.location.hash;
-                console.log('🔍 هش پیدا شد:', hash);
 
-                // اگه recovery توش هست
-                if (hash.indexOf('type=recovery') !== -1) {
-                    console.log('✅ لینک بازنشانی تشخیص داده شد!');
-
-                    // مودال رو باز کن
-                    setTimeout(function () {
-                        var modal = document.getElementById('resetPasswordModal');
-                        if (modal) {
-                            modal.style.display = 'flex';
-                            console.log('✅ مودال باز شد');
-                        } else {
-                            console.log('❌ مودال پیدا نشد');
-                        }
-                    }, 500);
-                }
+                // Enter هم کار کنه
+                document.getElementById('newResetPassword').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        document.getElementById('updateResetPassword').click();
+                    }
+                });
             }
         })();
     </script>
