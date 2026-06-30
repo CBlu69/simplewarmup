@@ -529,7 +529,9 @@
     <script src="auth.js"></script>
     <script src="app.js"></script>
     <script>
-        (function () {
+        // صبر کن تا همه اسکریپت‌ها لود بشن
+        window.addEventListener('DOMContentLoaded', function () {
+
             if (typeof checkAuth !== 'function') {
                 console.error('❌ checkAuth تعریف نشده. auth.js رو چک کن.');
                 return;
@@ -538,7 +540,10 @@
             const modal = document.getElementById('authModal');
             const closeModal = document.getElementById('closeModal');
 
+            if (!modal) return;
+
             function openAuthModal() { modal.classList.add('open'); }
+
             closeModal.addEventListener('click', () => modal.classList.remove('open'));
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
 
@@ -596,7 +601,6 @@
                 );
                 if (userData) {
                     modal.classList.remove('open');
-                    updateButtons(userData.username);
                     window.location.href = 'chat.html';
                 }
             });
@@ -607,28 +611,14 @@
                 document.getElementById('loginForm').style.display = 'flex';
             });
 
-            function updateButtons(username) {
-                ['heroChatBtn', 'chatPreviewBtn'].forEach(id => {
-                    const btn = document.getElementById(id);
-                    if (btn) {
-                        btn.textContent = '💬 چت (' + username + ')';
-                        btn.onclick = () => window.location.href = 'chat.html';
-                    }
-                });
-                const navBtn = document.getElementById('navChatBtn');
-                if (navBtn) {
-                    navBtn.title = 'چت (' + username + ')';
-                    navBtn.onclick = () => window.location.href = 'chat.html';
+            // چک کن کاربر قبلاً وارد شده یا نه
+            checkAuth().then(user => {
+                if (user) {
+                    console.log('✅ کاربر وارد شده:', user.username);
                 }
-            }
-
-
-
-            checkAuth().then(user => { if (user) updateButtons(user.username); });
-        })();
+            });
+        });
     </script>
-
-
 </body>
 
 </html>

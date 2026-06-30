@@ -4,6 +4,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
 // ===== توابع =====
 function getAvatar(name) {
     const av = ['🚗', '🏎️', '🚙', '🔥', '💨', '⚡', '🔧', '🎵'];
@@ -123,3 +124,4 @@ async function resetPassword(email) {
         showToast('📧 لینک بازنشانی به ایمیلت ارسال شد', 'success');
     }
 }
+
