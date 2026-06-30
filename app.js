@@ -154,220 +154,59 @@
     });
 })();
 
-
-
-/* ==================== SYNCED CHAT PREVIEW WITH REAL ONLINE COUNT ==================== */
+/* ==================== SYNCED CHAT PREVIEW (SUPABASE) ==================== */
 (function initChatPreview() {
     const previewMessages = document.getElementById('previewMessages');
-    const previewInput = document.getElementById('previewInput');
-    const sendPreviewBtn = document.getElementById('sendPreviewBtn');
     const onlineCount = document.getElementById('onlineCount');
 
-    if (!previewMessages || !previewInput || !sendPreviewBtn) return;
+    if (!previewMessages) return;
 
-    const STORAGE_KEY = 'chat_messages_general';
-    const ONLINE_KEY = 'chat_online_users';
-    const CHANNEL_NAME = 'chat_presence';
-
-    // User ID
-    let userId = localStorage.getItem('chat_userId');
-    if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('chat_userId', userId);
+    const supabase = window.supabaseClient;
+    if (!supabase) {
+        console.log('❌ Supabase برای چت پریمویو در دسترس نیست');
+        return;
     }
 
-    // Broadcast Channel
-    const channel = new BroadcastChannel(CHANNEL_NAME);
+    async function renderMessages() {
+        var result = await supabase
+            .from('chat_messages')
+            .select('*')
+            .eq('group_name', 'general')
+            .order('created_at', { ascending: false })
+            .limit(5);
 
-    // ===== ONLINE USERS =====
-    function getOnlineUsers() {
-        const data = localStorage.getItem(ONLINE_KEY);
-        return data ? JSON.parse(data) : {};
-    }
+        var messages = result.data;
 
-    function broadcastPresence() {
-        const name = localStorage.getItem('chat_username') || 'ناشناس';
-        const presence = {
-            userId: userId,
-            username: name,
-            group: 'general',
-            avatar: getAvatar(name),
-            timestamp: Date.now()
-        };
-
-        let users = getOnlineUsers();
-        users[userId] = presence;
-        localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-        channel.postMessage({ type: 'presence', data: presence });
-        updateOnlineDisplay();
-    }
-
-    function cleanupOnlineUsers() {
-        let users = getOnlineUsers();
-        const now = Date.now();
-        let changed = false;
-
-        Object.keys(users).forEach(id => {
-            if (now - users[id].timestamp > 10000) {
-                delete users[id];
-                changed = true;
-            }
-        });
-
-        if (changed) {
-            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-            updateOnlineDisplay();
-        }
-    }
-
-    function updateOnlineDisplay() {
-        const users = getOnlineUsers();
-        const totalOnline = Object.keys(users).length;
-        if (onlineCount) {
-            onlineCount.textContent = `${totalOnline} نفر آنلاین`;
-        }
-    }
-
-    channel.onmessage = (event) => {
-        if (event.data.type === 'presence') {
-            let users = getOnlineUsers();
-            users[event.data.data.userId] = event.data.data;
-            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-            updateOnlineDisplay();
-        }
-        if (event.data.type === 'leave') {
-            let users = getOnlineUsers();
-            delete users[event.data.userId];
-            localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-            updateOnlineDisplay();
-        }
-    };
-
-    // ===== MESSAGES =====
-    function getUsername() {
-        return localStorage.getItem('chat_username') || 'ناشناس';
-    }
-
-    function getMessages() {
-        const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : [];
-    }
-
-    function saveMessages(messages) {
-        const trimmed = messages.slice(-200);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-    }
-
-    function renderMessages() {
-        const messages = getMessages();
-        const username = getUsername();
-
-        if (messages.length === 0) {
-            previewMessages.innerHTML = `
-                <div style="text-align:center;color:rgba(179,236,255,0.3);padding:20px;">
-                    <p>هنوز پیامی نیست!</p>
-                    <p style="font-size:11px;">اولین نفر باش که پیام میده 💬</p>
-                </div>
-            `;
+        if (!messages || messages.length === 0) {
+            previewMessages.innerHTML = '<div style="text-align:center;color:rgba(179,236,255,0.3);padding:20px;"><p>هنوز پیامی نیست!</p><p style="font-size:11px;">اولین نفر باش که پیام میده 💬</p></div>';
             return;
         }
 
-        const lastMessages = messages.slice(-5);
+        messages.reverse();
 
-        previewMessages.innerHTML = lastMessages.map(msg => {
-            const isOwn = msg.username === username;
-            return `
-                <div class="chat-msg" style="${isOwn ? 'background:rgba(93,213,248,0.08);padding:6px 10px;border-radius:10px;' : ''}">
-                    <span class="msg-user">${msg.avatar || '👤'} ${msg.username}${msg.edited ? ' <small>(ویرایش)</small>' : ''}:</span>
-                    <span class="msg-text">${escapeHtml(msg.text)}</span>
-                    <span class="msg-time">${msg.time}</span>
-                </div>
-            `;
+        previewMessages.innerHTML = messages.map(function(msg) {
+            var time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }) : '';
+            return '<div class="chat-msg"><span class="msg-user">' + (msg.avatar || '👤') + ' ' + (msg.username || 'ناشناس') + ':</span><span class="msg-text">' + (msg.text || '') + '</span><span class="msg-time">' + time + '</span></div>';
         }).join('');
 
         previewMessages.scrollTop = previewMessages.scrollHeight;
     }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function getAvatar(name) {
-        const avatars = ['🚗', '🏎️', '🚙', '🔥', '💨', '⚡', '🔧', '🎵'];
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    async function updateOnlineDisplay() {
+        var result = await supabase.from('online_users').select('*');
+        var data = result.data;
+        var total = data ? data.length : 0;
+        if (onlineCount) {
+            onlineCount.textContent = total + ' نفر آنلاین';
         }
-        return avatars[Math.abs(hash) % avatars.length];
     }
 
-    // ===== SEND MESSAGE =====
-    function sendMessage() {
-        const text = previewInput.value.trim();
-        const username = getUsername();
-
-        if (!text) return;
-
-        const message = {
-            id: Date.now(),
-            username: username,
-            avatar: getAvatar(username),
-            text: text,
-            time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
-            group: 'general',
-            edited: false
-        };
-
-        const messages = getMessages();
-        messages.push(message);
-        saveMessages(messages);
-
-        previewInput.value = '';
-        renderMessages();
-    }
-
-
-    // ===== EVENT LISTENERS =====
-    sendPreviewBtn.addEventListener('click', sendMessage);
-
-    previewInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
-
-    // ===== INIT =====
-    broadcastPresence();
     renderMessages();
     updateOnlineDisplay();
+    setInterval(renderMessages, 3000);
+    setInterval(updateOnlineDisplay, 5000);
 
-    // Refresh messages
-    setInterval(renderMessages, 2000);
-
-    // Broadcast presence
-    setInterval(broadcastPresence, 5000);
-
-    // Cleanup
-    setInterval(cleanupOnlineUsers, 15000);
-
-    // Leave on unload
-    window.addEventListener('beforeunload', () => {
-        channel.postMessage({ type: 'leave', userId: userId });
-        let users = getOnlineUsers();
-        delete users[userId];
-        localStorage.setItem(ONLINE_KEY, JSON.stringify(users));
-    });
-
-    // Visibility change
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            channel.postMessage({ type: 'leave', userId: userId });
-        } else {
-            broadcastPresence();
-            renderMessages();
-        }
-    });
-
+    console.log('💬 چت پریمویو به Supabase وصله!');
 })();
 
 /* ==================== SHOP BUTTONS ==================== */
@@ -377,18 +216,8 @@
             e.preventDefault();
             const card = this.closest('.shop-card');
             const title = card.querySelector('.shop-title').textContent;
-            alert(`🛒 "${title}" به سبد خرید اضافه شد!\n\n📞 برای تکمیل خرید: ۰۹۱۲-XXX-XXXX`);
+            alert('🛒 "' + title + '" به سبد خرید اضافه شد!\n\n📞 برای تکمیل خرید: ۰۹۱۲-XXX-XXXX');
         });
-    });
-})();
-
-/* ==================== CHAT BUTTON ==================== */
-(function initChatButton() {
-    const chatBtn = document.getElementById('chat-btn');
-    if (!chatBtn) return;
-
-    chatBtn.addEventListener('click', () => {
-        alert('🏎️ گروه چت ماشین‌بازا به زودی...\n💨 Stay Tuned!');
     });
 })();
 
@@ -400,9 +229,6 @@
     carWrap.addEventListener('contextmenu', (e) => e.preventDefault());
     carWrap.addEventListener('dragstart', (e) => e.preventDefault());
 })();
-
-console.log('☁️ Simple Warmup - Ready! 🏎️');
-
 
 /* ==================== SCROLL CAR (IMPALA) ==================== */
 (function initScrollCar() {
@@ -425,12 +251,9 @@ console.log('☁️ Simple Warmup - Ready! 🏎️');
         
         car.style.top = newTop + 'px';
 
-        // جهت ایمپالا
         if (scrollTop > lastScroll) {
-            // داره میره پایین → رو به پایین
             img.style.transform = 'scaleY(-1)';
         } else {
-            // داره میره بالا → رو به بالا (عادی)
             img.style.transform = 'scaleY(1)';
         }
         
@@ -439,5 +262,6 @@ console.log('☁️ Simple Warmup - Ready! 🏎️');
 
     window.addEventListener('scroll', moveCar, { passive: true });
     moveCar();
-    
 })();
+
+console.log('☁️ Simple Warmup - Ready! 🏎️');
