@@ -644,7 +644,7 @@
             let currentGroup = 'general';
             let renderedIds = new Set();
 
-            // ===== SUPABASE =====
+            // ===== SUPABASE (فقط یکبار) =====
             const supabase = supabaseClient;
 
             // ===== DOM =====
@@ -674,141 +674,161 @@
             }
             updateUI();
 
+            // ===== TOAST =====
+            function showToast(msg, type) {
+                type = type || 'info';
+                const t = document.getElementById('toast');
+                if (!t) return;
+                t.textContent = msg;
+                t.className = 'toast toast-' + type + ' show';
+                setTimeout(function () { t.classList.remove('show'); }, 2500);
+            }
+
             // ===== LOGOUT =====
-            logoutBtn.addEventListener('click', async () => { await logoutUser(); window.location.href = 'index.html' });
+            logoutBtn.addEventListener('click', async function () { await logoutUser(); window.location.href = 'index.html'; });
 
             // ===== ADMIN PANEL =====
-            adminPanelBtn.addEventListener('click', () => { adminPanel.classList.toggle('open'); renderAdminPanel() });
-            adminClose.addEventListener('click', () => adminPanel.classList.remove('open'));
+            adminPanelBtn.addEventListener('click', function () { adminPanel.classList.toggle('open'); renderAdminPanel(); });
+            adminClose.addEventListener('click', function () { adminPanel.classList.remove('open'); });
+
             async function renderAdminPanel() {
-                const { data: users } = await supabase.from('profiles').select('*');
-                adminUserList.innerHTML = users?.map(u => `
-                <div class="admin-user-item"><span>👤 ${u.username || u.email}</span>
-                    ${u.role !== 'admin' ? `<button class="msg-action-btn" onclick="updateUserRole('${u.id}','admin')" title="ادمین کن">👑</button>` :
-                        `<button class="msg-action-btn" onclick="updateUserRole('${u.id}','user')" title="حذف ادمین">⬇️</button>`}
-                </div>`).join('') || '<p style="color:rgba(179,236,255,.3)">کسی نیست</p>';
+                var result = await supabase.from('profiles').select('*');
+                var users = result.data;
+                adminUserList.innerHTML = users ? users.map(function (u) {
+                    return '<div class="admin-user-item"><span>👤 ' + (u.username || u.email) + '</span>' +
+                        (u.role !== 'admin' ?
+                            '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'admin\')">👑</button>' :
+                            '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'user\')">⬇️</button>') +
+                        '</div>';
+                }).join('') : '<p style="color:rgba(179,236,255,.3)">کسی نیست</p>';
             }
-            window.updateUserRole = async function (uid, role) {
-                await supabase.from('profiles').upsert({ id: uid, role });
+
+            window._upRole = async function (uid, role) {
+                await supabase.from('profiles').upsert({ id: uid, role: role });
                 showToast('✅ رول آپدیت شد', 'success');
                 renderAdminPanel();
             };
 
             // ===== MESSAGES =====
             async function loadMessages() {
-                const { data } = await supabase.from('chat_messages').select('*').eq('group_name', currentGroup).order('created_at', { ascending: true }).limit(200);
-                chatMessages.innerHTML = ''; renderedIds.clear();
-                if (!data || !data.length) { chatMessages.innerHTML = '<div style="text-align:center;color:rgba(179,236,255,.3);padding:40px">💬<br>هنوز پیامی نیست!</div>'; return }
-                data.forEach(msg => appendMessage(msg));
+                var result = await supabase.from('chat_messages').select('*').eq('group_name', currentGroup).order('created_at', { ascending: true }).limit(200);
+                var data = result.data;
+                chatMessages.innerHTML = '';
+                renderedIds.clear();
+                if (!data || !data.length) {
+                    chatMessages.innerHTML = '<div style="text-align:center;color:rgba(179,236,255,.3);padding:40px">💬<br>هنوز پیامی نیست!</div>';
+                    return;
+                }
+                data.forEach(function (msg) { appendMessage(msg); });
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
+
             function appendMessage(msg) {
                 if (renderedIds.has(msg.id)) return;
-                const isOwn = msg.user_id === userId;
-                const div = document.createElement('div');
-                div.className = `message ${isOwn ? 'own' : ''} ${msg.pinned ? 'pinned' : ''}`;
-                div.id = `msg-${msg.id}`;
-                div.innerHTML = `
-                ${msg.pinned ? '<div class="pinned-badge">📌</div>' : ''}
-                <div class="msg-avatar">${msg.avatar || '👤'}</div>
-                <div class="msg-content">
-                    <div class="msg-info"><span>${msg.username || 'ناشناس'}</span>${msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : ''}<span>${new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}</span></div>
-                    <div class="msg-bubble">${msg.text}</div>
-                    <div class="msg-actions">
-                        ${isOwn ? `<button class="msg-action-btn" onclick="deleteMsg('${msg.id}')">🗑</button>` : ''}
-                        ${userRole === 'admin' ? `<button class="msg-action-btn delete" onclick="deleteMsg('${msg.id}')">🗑</button><button class="msg-action-btn pin" onclick="pinMsg('${msg.id}',${!msg.pinned})">📌</button>` : ''}
-                    </div>
-                </div>`;
-                chatMessages.appendChild(div); renderedIds.add(msg.id);
+                var isOwn = msg.user_id === userId;
+                var div = document.createElement('div');
+                div.className = 'message' + (isOwn ? ' own' : '') + (msg.pinned ? ' pinned' : '');
+                div.id = 'msg-' + msg.id;
+                div.innerHTML =
+                    (msg.pinned ? '<div class="pinned-badge">📌</div>' : '') +
+                    '<div class="msg-avatar">' + (msg.avatar || '👤') + '</div>' +
+                    '<div class="msg-content">' +
+                    '<div class="msg-info"><span>' + (msg.username || 'ناشناس') + '</span>' + (msg.edited ? '<span class="edited-badge">(ویرایش)</span>' : '') + '<span>' + new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }) + '</span></div>' +
+                    '<div class="msg-bubble">' + msg.text + '</div>' +
+                    '<div class="msg-actions">' +
+                    (isOwn ? '<button class="msg-action-btn" onclick="window._delMsg(\'' + msg.id + '\')">🗑</button>' : '') +
+                    (userRole === 'admin' ? '<button class="msg-action-btn delete" onclick="window._delMsg(\'' + msg.id + '\')">🗑</button><button class="msg-action-btn pin" onclick="window._pinMsg(\'' + msg.id + '\',' + (!msg.pinned) + ')">📌</button>' : '') +
+                    '</div>' +
+                    '</div>';
+                chatMessages.appendChild(div);
+                renderedIds.add(msg.id);
             }
+
             async function sendMessage() {
-                const text = messageInput.value.trim(); if (!text) return;
-                const msg = { user_id: userId, username, avatar, text, group_name: currentGroup, pinned: false, edited: false };
-                const { error } = await supabase.from('chat_messages').insert(msg);
-                if (!error) { messageInput.value = ''; loadMessages() }
+                var text = messageInput.value.trim();
+                if (!text) return;
+                var msg = { user_id: userId, username: username, avatar: avatar, text: text, group_name: currentGroup, pinned: false, edited: false };
+                var result = await supabase.from('chat_messages').insert(msg);
+                if (!result.error) { messageInput.value = ''; loadMessages(); }
                 else showToast('❌ خطا در ارسال', 'error');
             }
-            window.deleteMsg = async function (id) {
+
+            window._delMsg = async function (id) {
                 if (!confirm('حذف بشه؟')) return;
                 await supabase.from('chat_messages').delete().eq('id', id);
-                document.getElementById(`msg-${id}`)?.remove();
+                var el = document.getElementById('msg-' + id);
+                if (el) el.remove();
             };
-            window.pinMsg = async function (id, pin) {
+
+            window._pinMsg = async function (id, pin) {
                 await supabase.from('chat_messages').update({ pinned: pin }).eq('id', id);
                 loadMessages();
             };
 
             // ===== GROUP SWITCH =====
-            document.querySelectorAll('.group-item').forEach(item => { item.addEventListener('click', () => switchGroup(item.dataset.group)) });
+            document.querySelectorAll('.group-item').forEach(function (item) {
+                item.addEventListener('click', function () { switchGroup(item.dataset.group); });
+            });
+
             function switchGroup(group) {
-                currentGroup = group; document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
-                document.querySelector(`[data-group="${group}"]`)?.classList.add('active');
-                groupTitle.textContent = document.querySelector(`[data-group="${group}"] .group-name`)?.textContent || group;
+                currentGroup = group;
+                document.querySelectorAll('.group-item').forEach(function (i) { i.classList.remove('active'); });
+                var activeItem = document.querySelector('[data-group="' + group + '"]');
+                if (activeItem) activeItem.classList.add('active');
+                var nameEl = document.querySelector('[data-group="' + group + '"] .group-name');
+                groupTitle.textContent = nameEl ? nameEl.textContent : group;
                 loadMessages();
             }
 
-            // ===== TOAST =====
-            function showToast(msg, type = 'info') { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast toast-${type} show`; setTimeout(() => t.classList.remove('show'), 2500) }
-
             // ===== EVENTS =====
             sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage() });
-            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+            messageInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendMessage(); });
+            menuToggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
+
+            // ===== آنلاین =====
+            async function updatePresence() {
+                await supabase.from('online_users').upsert({
+                    user_id: userId,
+                    username: username,
+                    avatar: avatar,
+                    group_name: currentGroup,
+                    last_seen: new Date().toISOString()
+                });
+            }
+
+            async function cleanupOnline() {
+                var cutoff = new Date(Date.now() - 10000).toISOString();
+                await supabase.from('online_users').delete().lt('last_seen', cutoff);
+            }
+
+            async function updateOnlineDisplay() {
+                var result = await supabase.from('online_users').select('*');
+                var data = result.data;
+                var total = data ? data.length : 0;
+                if (onlineCount) onlineCount.textContent = total + ' نفر آنلاین';
+
+                document.querySelectorAll('.group-item').forEach(function (item) {
+                    var g = item.dataset.group;
+                    var count = data ? data.filter(function (u) { return u.group_name === g; }).length : 0;
+                    var el = item.querySelector('.group-count');
+                    if (el) el.textContent = count + ' آنلاین';
+                });
+            }
 
             // ===== INIT =====
             loadMessages();
-            setInterval(loadMessages, 2000);
-
-            // حضور آنلاین
-            async function updatePresence() {
-                await supabase.from('online_users').upsert({ user_id: userId, username, avatar, group_name: currentGroup, last_seen: new Date().toISOString() });
-            }
             updatePresence();
+            updateOnlineDisplay();
+            setInterval(loadMessages, 2000);
             setInterval(updatePresence, 3000);
+            setInterval(cleanupOnline, 10000);
+            setInterval(updateOnlineDisplay, 3000);
+
+            window.addEventListener('beforeunload', async function () {
+                await supabase.from('online_users').delete().eq('user_id', userId);
+            });
+
         })();
-        // ===== ONLINE USERS =====
-        async function updatePresence() {
-            await supabase.from('online_users').upsert({
-                user_id: userId,
-                username: username,
-                avatar: avatar,
-                group_name: currentGroup,
-                last_seen: new Date().toISOString()
-            });
-        }
-
-        async function cleanupOnline() {
-            const cutoff = new Date(Date.now() - 10000).toISOString();
-            await supabase.from('online_users').delete().lt('last_seen', cutoff);
-        }
-
-        async function updateOnlineDisplay() {
-            const { data } = await supabase.from('online_users').select('*');
-            const total = data ? data.length : 0;
-            if (onlineCount) onlineCount.textContent = total + ' نفر آنلاین';
-
-            // تعداد هر گروه
-            document.querySelectorAll('.group-item').forEach(item => {
-                const g = item.dataset.group;
-                const count = data ? data.filter(u => u.group_name === g).length : 0;
-                const el = item.querySelector('.group-count');
-                if (el) el.textContent = count + ' آنلاین';
-            });
-        }
-
-        // هر ۳ ثانیه آپدیت
-        setInterval(updatePresence, 3000);
-        setInterval(cleanupOnline, 10000);
-        setInterval(updateOnlineDisplay, 2000);
-
-        // اول بار
-        updatePresence();
-        updateOnlineDisplay();
-
-        // خروج
-        window.addEventListener('beforeunload', async () => {
-            await supabase.from('online_users').delete().eq('user_id', userId);
-        });
     </script>
 </body>
 
