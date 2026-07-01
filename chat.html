@@ -1312,28 +1312,16 @@
             };
 
             window._upRole = async function (uid, role) {
-                try {
-                    // بررسی اینکه کاربر ادمین است
-                    if (userRole !== 'admin') {
-                        showToast('❌ فقط ادمین می‌تواند نقش‌ها را تغییر دهد', 'error');
-                        return;
-                    }
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ role: role })
+                    .eq('id', uid);
 
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .update({ role: role })
-                        .eq('id', uid);
-
-                    if (error) {
-                        console.error('خطا در تغییر نقش:', error);
-                        showToast('❌ خطا در تغییر نقش: ' + error.message, 'error');
-                    } else {
-                        showToast('✅ نقش کاربر با موفقیت تغییر کرد', 'success');
-                        renderAdminPanel();
-                    }
-                } catch (err) {
-                    console.error('خطا:', err);
-                    showToast('❌ خطا در تغییر نقش', 'error');
+                if (error) {
+                    showToast('❌ خطا: ' + error.message, 'error');
+                } else {
+                    showToast('✅ نقش کاربر تغییر کرد', 'success');
+                    renderAdminPanel();
                 }
             };
 
