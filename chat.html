@@ -1285,12 +1285,85 @@
                 messageInput.placeholder = 'پیام...';
             });
 
+            // تعریف توابع global با event delegation
             window._replyMsg = function (id, msgUsername, msgText) {
                 replyTo = { id: id, username: msgUsername, text: msgText.substring(0, 50) };
                 replyBar.classList.add('show');
                 replyText.textContent = msgUsername + ': ' + msgText.substring(0, 40) + '...';
                 messageInput.placeholder = 'پاسخ...';
                 messageInput.focus();
+            };
+
+            window._editMsg = function (id, oldText) {
+                editMessageModal(id, oldText);
+            };
+
+            window._delMsg = function (id) {
+                showGlassModal('حذف پیام', 'این پیام حذف شود؟', [
+                    {
+                        text: 'حذف', class: 'btn-danger', action: async function () {
+                            await supabase.from('chat_messages').delete().eq('id', id);
+                            var el = document.getElementById('msg-' + id);
+                            if (el) el.remove();
+                        }
+                    },
+                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
+                ]);
+            };
+
+            window._upRole = async function (uid, role) {
+                try {
+                    // بررسی اینکه کاربر ادمین است
+                    if (userRole !== 'admin') {
+                        showToast('❌ فقط ادمین می‌تواند نقش‌ها را تغییر دهد', 'error');
+                        return;
+                    }
+
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .update({ role: role })
+                        .eq('id', uid);
+
+                    if (error) {
+                        console.error('خطا در تغییر نقش:', error);
+                        showToast('❌ خطا در تغییر نقش: ' + error.message, 'error');
+                    } else {
+                        showToast('✅ نقش کاربر با موفقیت تغییر کرد', 'success');
+                        renderAdminPanel();
+                    }
+                } catch (err) {
+                    console.error('خطا:', err);
+                    showToast('❌ خطا در تغییر نقش', 'error');
+                }
+            };
+
+            window._banUser = function (uid) {
+                showGlassModal('اخراج کاربر', 'کاربر برای همیشه از گروه اخراج شود؟', [
+                    {
+                        text: 'اخراج', class: 'btn-danger', action: async function () {
+                            await supabase.from('banned_users').upsert({ user_id: uid, banned_by: userId, banned_at: new Date().toISOString() });
+                            await supabase.from('chat_messages').delete().eq('user_id', uid);
+                            await supabase.from('online_users').delete().eq('user_id', uid);
+                            showToast('کاربر اخراج شد', 'success');
+                            renderAdminPanel();
+                            loadMessages();
+                        }
+                    },
+                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
+                ]);
+            };
+
+            window._unbanUser = function (uid) {
+                showGlassModal('بازگشت کاربر', 'کاربر به گروه بازگردد؟', [
+                    {
+                        text: 'بازگرداندن', class: 'btn-success', action: async function () {
+                            await supabase.from('banned_users').delete().eq('user_id', uid);
+                            showToast('کاربر بازگشت', 'success');
+                            renderAdminPanel();
+                        }
+                    },
+                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
+                ]);
             };
 
             chatMessages.addEventListener('scroll', function () {
@@ -1363,43 +1436,46 @@
                 ]);
             });
 
-            adminPanelBtn.addEventListener('click', function () { adminPanel.classList.toggle('open'); renderAdminPanel(); });
-            adminClose.addEventListener('click', function () { adminPanel.classList.remove('open'); });
+            adminPanelBtn.addEventListener('click', function () {
+                adminPanel.classList.toggle('open');
+                renderAdminPanel();
+            });
+
+            adminClose.addEventListener('click', function () {
+                adminPanel.classList.remove('open');
+            });
 
             async function renderAdminPanel() {
                 var result = await supabase.from('profiles').select('*');
                 var users = result.data;
                 var bannedResult = await supabase.from('banned_users').select('user_id');
                 var bannedIds = bannedResult.data ? bannedResult.data.map(function (b) { return b.user_id; }) : [];
+
                 adminUserList.innerHTML = users ? users.map(function (u) {
                     var isBanned = bannedIds.indexOf(u.id) !== -1;
-                    return '<div class="admin-user-item"><span>' + (u.username || u.email) + '</span><div class="admin-actions-row">' +
-                        (u.role !== 'admin' ? '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'admin\')">👑</button>' : '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'user\')">⬇</button>') +
-                        (u.id !== userId ? (isBanned ? '<button class="msg-action-btn" onclick="window._unbanUser(\'' + u.id + '\')">🔓</button>' : '<button class="msg-action-btn delete" onclick="window._banUser(\'' + u.id + '\')">🚫</button>') : '') +
-                        '</div></div>';
+                    var buttons = '<div class="admin-actions-row">';
+
+                    // دکمه تغییر نقش
+                    if (u.role !== 'admin') {
+                        buttons += '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'admin\')">👑</button>';
+                    } else if (u.id !== userId) {
+                        buttons += '<button class="msg-action-btn" onclick="window._upRole(\'' + u.id + '\',\'user\')">⬇</button>';
+                    }
+
+                    // دکمه بن/آنبن
+                    if (u.id !== userId) {
+                        if (isBanned) {
+                            buttons += '<button class="msg-action-btn" onclick="window._unbanUser(\'' + u.id + '\')">🔓</button>';
+                        } else {
+                            buttons += '<button class="msg-action-btn delete" onclick="window._banUser(\'' + u.id + '\')">🚫</button>';
+                        }
+                    }
+
+                    buttons += '</div>';
+
+                    return '<div class="admin-user-item"><span>' + (u.username || u.email) + '</span>' + buttons + '</div>';
                 }).join('') : '<p style="color: var(--tg-text-muted); text-align: center;">کاربری نیست</p>';
             }
-
-
-
-            window._banUser = function (uid) {
-                showGlassModal('اخراج کاربر', 'کاربر برای همیشه از گروه اخراج شود؟', [
-                    { text: 'اخراج', class: 'btn-danger', action: async function () { await supabase.from('banned_users').upsert({ user_id: uid, banned_by: userId, banned_at: new Date().toISOString() }); await supabase.from('chat_messages').delete().eq('user_id', uid); await supabase.from('online_users').delete().eq('user_id', uid); showToast('کاربر اخراج شد', 'success'); renderAdminPanel(); loadMessages(); } },
-                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
-                ]);
-            };
-            window._unbanUser = function (uid) {
-                showGlassModal('بازگشت کاربر', 'کاربر به گروه بازگردد؟', [
-                    { text: 'بازگرداندن', class: 'btn-success', action: async function () { await supabase.from('banned_users').delete().eq('user_id', uid); showToast('کاربر بازگشت', 'success'); renderAdminPanel(); } },
-                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
-                ]);
-            };
-            window._delMsg = function (id) {
-                showGlassModal('حذف پیام', 'این پیام حذف شود؟', [
-                    { text: 'حذف', class: 'btn-danger', action: async function () { await supabase.from('chat_messages').delete().eq('id', id); var el = document.getElementById('msg-' + id); if (el) el.remove(); } },
-                    { text: 'انصراف', class: 'btn-cancel', action: function () { } }
-                ]);
-            };
 
             async function loadMessages() {
                 var result = await supabase.from('chat_messages').select('*').eq('group_name', currentGroup).order('created_at', { ascending: true }).limit(200);
@@ -1467,8 +1543,6 @@
                 if (!result.error) { messageInput.value = ''; supabase.from('typing').delete().eq('user_id', userId); loadMessages(); } else showToast('خطا در ارسال', 'error');
             }
 
-            window._editMsg = function (id, oldText) { editMessageModal(id, oldText); };
-
             document.querySelectorAll('.chat-item').forEach(function (item) {
                 item.addEventListener('click', function () {
                     switchGroup(item.dataset.group);
@@ -1489,20 +1563,40 @@
             }
 
             sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+            messageInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
             menuToggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
 
             // جستجو
-            searchInput.addEventListener('input', function () {
-                var query = this.value.toLowerCase();
-                document.querySelectorAll('.chat-item').forEach(function (item) {
-                    var name = item.querySelector('.chat-name').textContent.toLowerCase();
-                    item.style.display = name.includes(query) ? 'flex' : 'none';
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    var query = this.value.toLowerCase();
+                    document.querySelectorAll('.chat-item').forEach(function (item) {
+                        var name = item.querySelector('.chat-name').textContent.toLowerCase();
+                        item.style.display = name.includes(query) ? 'flex' : 'none';
+                    });
                 });
-            });
+            }
 
-            async function updatePresence() { await supabase.from('online_users').upsert({ user_id: userId, username: username, avatar: avatar, group_name: currentGroup, last_seen: new Date().toISOString() }); }
-            async function cleanupOnline() { var cutoff = new Date(Date.now() - 10000).toISOString(); await supabase.from('online_users').delete().lt('last_seen', cutoff); }
+            async function updatePresence() {
+                await supabase.from('online_users').upsert({
+                    user_id: userId,
+                    username: username,
+                    avatar: avatar,
+                    group_name: currentGroup,
+                    last_seen: new Date().toISOString()
+                });
+            }
+
+            async function cleanupOnline() {
+                var cutoff = new Date(Date.now() - 10000).toISOString();
+                await supabase.from('online_users').delete().lt('last_seen', cutoff);
+            }
+
             async function updateOnlineDisplay() {
                 var result = await supabase.from('online_users').select('*');
                 var data = result.data,
@@ -1524,6 +1618,7 @@
             setInterval(cleanupOnline, 10000);
             setInterval(updateOnlineDisplay, 3000);
             setInterval(updateTypingIndicator, 1500);
+
             window.addEventListener('beforeunload', async function () {
                 await supabase.from('online_users').delete().eq('user_id', userId);
                 await supabase.from('typing').delete().eq('user_id', userId);
