@@ -1380,7 +1380,8 @@
                 }).join('') : '<p style="color: var(--tg-text-muted); text-align: center;">کاربری نیست</p>';
             }
 
-            window._upRole = async function (uid, role) { await supabase.from('profiles').upsert({ id: uid, role: role }); showToast('انجام شد', 'success'); renderAdminPanel(); };
+
+
             window._banUser = function (uid) {
                 showGlassModal('اخراج کاربر', 'کاربر برای همیشه از گروه اخراج شود؟', [
                     { text: 'اخراج', class: 'btn-danger', action: async function () { await supabase.from('banned_users').upsert({ user_id: uid, banned_by: userId, banned_at: new Date().toISOString() }); await supabase.from('chat_messages').delete().eq('user_id', uid); await supabase.from('online_users').delete().eq('user_id', uid); showToast('کاربر اخراج شد', 'success'); renderAdminPanel(); loadMessages(); } },
